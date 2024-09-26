@@ -1,0 +1,141 @@
+{
+  "routes": [
+    {
+      "legs": [
+        {
+          "distanceMeters": 335,
+          "duration": "110s",
+          "polyline": {
+            "encodedPolyline": "wp`~@}jksVfA_BnFxBdBl@Wr@h@R"
+          },
+          "steps": [
+            {
+              "distanceMeters": 66,
+              "staticDuration": "24s",
+              "polyline": {
+                "encodedPolyline": "wp`~@}jksVfA_B"
+              },
+              "navigationInstruction": {
+                "maneuver": "DEPART",
+                "instructions": "Head <b>southeast</b> on <b>Mount Manunggal St</b> toward <b>Mt. Apo St</b>"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 10.3298762,
+                  "longitude": 123.92639419999999
+                },
+                "heading": 0
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 10.3295211,
+                  "longitude": 123.9268729
+                },
+                "heading": 0
+              }
+            },
+            {
+              "distanceMeters": 212,
+              "staticDuration": "66s",
+              "polyline": {
+                "encodedPolyline": "on`~@}mksVnFxBdBl@"
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn <b>right</b> onto <b>Mt. Apo St</b>"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 10.3295211,
+                  "longitude": 123.9268729
+                },
+                "heading": 0
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 10.3278059,
+                  "longitude": 123.92603199999999
+                },
+                "heading": 0
+              }
+            },
+            {
+              "distanceMeters": 32,
+              "staticDuration": "9s",
+              "polyline": {
+                "encodedPolyline": "yc`~@uhksVWr@"
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn <b>right</b> onto <b>Mount Makiling St</b>"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 10.3278059,
+                  "longitude": 123.92603199999999
+                },
+                "heading": 0
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 10.327929899999999,
+                  "longitude": 123.9257665
+                },
+                "heading": 0
+              }
+            },
+            {
+              "distanceMeters": 25,
+              "staticDuration": "11s",
+              "polyline": {
+                "encodedPolyline": "qd`~@agksVh@R"
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Turn <b>left</b><div style=\"font-size:0.9em\">Destination will be on the left</div>"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 10.327929899999999,
+                  "longitude": 123.9257665
+                },
+                "heading": 0
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 10.3277244,
+                  "longitude": 123.92566839999999
+                },
+                "heading": 0
+              }
+            }
+          ],
+          "travelAdvisory": {
+            "speedReadingIntervals": [
+              {
+                "startPolylinePointIndex": 0,
+                "endPolylinePointIndex": 8,
+                "speed": "NORMAL"
+              }
+            ]
+          }
+        }
+      ],
+      "distanceMeters": 335,
+      "duration": "108s",
+      "polyline": {
+        "encodedPolyline": "wp`~@}jksVfA_BnFxBdBl@Wr@h@R"
+      },
+      "description": "Mt. Apo St",
+      "travelAdvisory": {
+        "speedReadingIntervals": [
+          {
+            "startPolylinePointIndex": 0,
+            "endPolylinePointIndex": 5,
+            "speed": "NORMAL"
+          }
+        ]
+      }
+    }
+  ]
+}
