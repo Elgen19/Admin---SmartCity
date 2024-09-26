@@ -45,7 +45,8 @@ exports.sendInvite = async (req, res) => {
     });
 
     // Generate the signup link (you can replace with your frontend URL)
-    const signupLink = `http://localhost:3000/signup?token=${token}`;
+    // const signupLink = `http://localhost:3000/signup?token=${token}`;
+    const signupLink = `https://smartcity-admin.vercel.app/signup?token=${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,

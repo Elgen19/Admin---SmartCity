@@ -35,7 +35,7 @@ function Dashboard() {
     try {
       console.log('Sending invite to:', email); // Log the email being invited
       const response = await axios.post(
-        'http://localhost:5000/api/invites/send-invite',
+        'https://smartcity-admin.vercel.app/api/invites/send-invite',
         { email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
