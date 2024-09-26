@@ -38,7 +38,7 @@ function SignUp() {
 
       try {
         const response = await axios.get(
-          `https://smartcity-admin.vercel.app/api/verify-invite?token=${token}`
+          `https://admin-smart-city-jjxbecet9-elgens-projects.vercel.app/api/verify-invite?token=${token}`
         );
         setEmail(response.data.email); // Set the email associated with the token
         setTokenValid(true);
@@ -73,7 +73,7 @@ const handleSignUp = async (e) => {
 
     setTimeout(async () => {
       try {
-        const response = await axios.post('https://smartcity-admin.vercel.app/api/signup', {
+        const response = await axios.post('https://admin-smart-city-jjxbecet9-elgens-projects.vercel.app/api/signup', {
           token,
           name: fullName,
           password,
