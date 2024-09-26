@@ -35,7 +35,7 @@ function Dashboard() {
     try {
       console.log('Sending invite to:', email); // Log the email being invited
       const response = await axios.post(
-        'https://admin-smart-city-jjxbecet9-elgens-projects.vercel.app/api/invites/send-invite',
+        'https://smartcity-dn34.onrender.com/api/invites/send-invite',
         { email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
