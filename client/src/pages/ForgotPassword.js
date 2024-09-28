@@ -17,7 +17,11 @@ const ForgotPassword = () => {
 
         try {
             // Check if the user exists in Firebase Auth
-            const response = await axios.post('https://smartcity-dn34.onrender.com/api/auth/check-user', { email });
+
+            // const response = await axios.post('https://smartcity-dn34.onrender.com/api/auth/check-user', { email });
+            const response = await axios.post('http://localhost:5000/api/auth/check-user', { email });
+
+            
 
             if (response.data.exists) {
                 // If user exists, send the reset password email

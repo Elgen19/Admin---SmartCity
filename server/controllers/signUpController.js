@@ -136,3 +136,7 @@ async function sendVerificationEmail(email, verificationLink) {
         console.error('Error sending verification email:', error);
     }
 }
+
+
+
+

@@ -26,7 +26,7 @@ const SignIn = () => {
                 return;
             }
 
-            navigate('/dashboard');
+            navigate('/profile');
         } catch (err) {
             setError(err.message);
         }

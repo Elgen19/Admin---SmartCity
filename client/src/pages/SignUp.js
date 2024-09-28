@@ -6,8 +6,8 @@ import backgroundImage from '../assets/images/Rectangle 18.png';
 import secureIcon from '../assets/images/Secure.png';
 import profileIcon from '../assets/images/Customer.png';
 import adminImage from '../assets/images/Smart city (1) 2.png';
-import Lottie from 'lottie-react'; // Import Lottie
-import loadingAnimation  from '../assets/lottifies/loading.json'
+import Lottie from 'lottie-react';
+import loadingAnimation from '../assets/lottifies/loading.json';
 
 function SignUp() {
   const [fullName, setFullName] = useState('');
@@ -17,14 +17,12 @@ function SignUp() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tokenValid, setTokenValid] = useState(false);
-  const [signUpProcessing, setSignUpProcessing] = useState(false); // New state for sign-up processing
-  const [verificationSent, setVerificationSent] = useState(false); // New state for verification status
-
+  const [signUpProcessing, setSignUpProcessing] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Extract token from URL
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get('token');
 
@@ -38,9 +36,10 @@ function SignUp() {
 
       try {
         const response = await axios.get(
-          `https://smartcity-dn34.onrender.com/api/verify-invite?token=${token}`
+          // `https://smartcity-dn34.onrender.com/api/verify-invite?token=${token}`
+          `http://localhost:5000/api/verify-invite?token=${token}`
         );
-        setEmail(response.data.email); // Set the email associated with the token
+        setEmail(response.data.email);
         setTokenValid(true);
         setLoading(false);
       } catch (err) {
@@ -54,7 +53,7 @@ function SignUp() {
     verifyToken();
   }, [token]);
 
-const handleSignUp = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError(null);
     setSignUpProcessing(true);
@@ -65,6 +64,13 @@ const handleSignUp = async (e) => {
       return;
     }
 
+    if (fullName.trim() === "") {
+      setError("Please input your full name");
+      setSignUpProcessing(false);
+      return; // Stop the function execution
+    }
+    
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
       setSignUpProcessing(false);
@@ -72,14 +78,22 @@ const handleSignUp = async (e) => {
     }
 
     setTimeout(async () => {
-      try {
-        const response = await axios.post('https://smartcity-dn34.onrender.com/api/signup', {
-          token,
-          name: fullName,
-          password,
-        });
+      // try {
+      //   await axios.post('https://smartcity-dn34.onrender.com/api/signup', {
+      //     token,
+      //     name: fullName,
+      //     password,
+      //   });
 
-        // Indicate that verification email has been sent
+        try {
+          await axios.post('http://localhost:5000/api/signup', {
+            token,
+            name: fullName,
+            password,
+          });
+
+     
+
         setVerificationSent(true);
       } catch (err) {
         setError(
@@ -109,18 +123,19 @@ const handleSignUp = async (e) => {
     );
   }
 
-
-
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen" style={{
-        background: 'linear-gradient(to bottom, #0E1550 30%, #2030B6 100%)' // Updated gradient background
-      }}>
+      <div
+        className="flex flex-col items-center justify-center min-h-screen"
+        style={{
+          background: 'linear-gradient(to bottom, #0E1550 30%, #2030B6 100%)',
+        }}
+      >
         <div className="flex flex-col items-center space-y-4">
-          <Lottie 
-            animationData={loadingAnimation} // Use the imported Lottie animation
-            loop={true} // Set to loop
-            style={{ width: 100, height: 100 }} // Set size of the animation
+          <Lottie
+            animationData={loadingAnimation}
+            loop={true}
+            style={{ width: 100, height: 100 }}
           />
           <p className="text-lg font-semibold text-white">
             Please wait while we load your information...
@@ -129,30 +144,29 @@ const handleSignUp = async (e) => {
       </div>
     );
   }
-  
 
- // Sign-up processing screen
-if (signUpProcessing) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen" style={{
-      background: 'linear-gradient(to bottom, #0E1550 30%, #2030B6 100%)' // Apply the gradient
-    }}>
-      <div className="flex flex-col items-center space-y-4">
-        <Lottie 
-          animationData={loadingAnimation} // Use the imported Lottie animation
-          loop={true} // Set to loop or not based on your preference
-          style={{ width: 100, height: 100 }} // Set size of the animation
-        />
-        <p className="text-lg font-semibold text-white">
-          Processing your registration, please wait...
-        </p>
+  if (signUpProcessing) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen"
+        style={{
+          background: 'linear-gradient(to bottom, #0E1550 30%, #2030B6 100%)',
+        }}
+      >
+        <div className="flex flex-col items-center space-y-4">
+          <Lottie
+            animationData={loadingAnimation}
+            loop={true}
+            style={{ width: 100, height: 100 }}
+          />
+          <p className="text-lg font-semibold text-white">
+            Processing your registration, please wait...
+          </p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-
-  // Fancy invalid token layout
   if (!tokenValid) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-red-500 to-pink-500 text-white">
@@ -189,27 +203,19 @@ if (signUpProcessing) {
         alt="Background"
       />
       <div className="flex-1 h-full bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] flex justify-center items-center">
-        <div className="flex flex-col justify-center items-center gap-6 p-4">
-          <div className="flex flex-col items-center mb-6">
-            <img
-              className="w-36 h-36 mb-2"
-              src={adminImage}
-              alt="Company Logo"
-            />
+        <div className="flex flex-col justify-center items-center gap-6 p-6">
+          <div className="flex flex-col items-center">
+            <img className="w-36 h-36 mb-2" src={adminImage} alt="Company Logo" />
             <h1 className="text-white text-4xl font-bold font-['Nunito'] tracking-[2px] shadow-lg">
               Sign Up
             </h1>
           </div>
-  
+
           <div className="flex flex-col justify-start items-center gap-6">
-            {/** Input fields styled with rounded corners, shadows, and transitions */}
+            {/* Input fields with adjusted padding/margin */}
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
-                <img
-                  className="w-8 h-8"
-                  src={profileIcon}
-                  alt="Full Name Icon"
-                />
+                <img className="w-8 h-8" src={profileIcon} alt="Full Name Icon" />
                 <input
                   type="text"
                   value={fullName}
@@ -230,7 +236,7 @@ if (signUpProcessing) {
                   placeholder="Enter email address"
                   className="text-[#1e1e1e]/70 text-lg font-medium font-['Nunito'] bg-transparent outline-none w-full"
                   required
-                  disabled // Email is populated from the token, so it should be read-only
+                  readOnly
                 />
               </div>
             </div>
@@ -249,11 +255,7 @@ if (signUpProcessing) {
             </div>
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
-                <img
-                  className="w-8 h-8"
-                  src={secureIcon}
-                  alt="Confirm Password Icon"
-                />
+                <img className="w-8 h-8" src={secureIcon} alt="Confirm Password Icon" />
                 <input
                   type="password"
                   value={confirmPassword}
@@ -264,28 +266,28 @@ if (signUpProcessing) {
                 />
               </div>
             </div>
+            <button
+              onClick={handleSignUp}
+              className="bg-[#09d1e3] text-lg font-bold text-white rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105"
+              style={{
+                width: '380px', // Match the input width
+                height: '50px', // Adjust the button height
+              }}
+            >
+              Sign Up
+            </button>
           </div>
-  
-          <button
-          onClick={handleSignUp}
-          className={`w-[380px] h-12 p-2.5 rounded-2xl flex justify-center items-center transition-all duration-300 ${
-            loading ? 'bg-gray-400' : 'bg-[#09d1e3] hover:bg-[#05b1d1] active:scale-95'
-          }`}
-          disabled={loading}
-        >
-          <div className="text-white text-xl font-medium font-['Nunito']">
-            {loading ? 'Processing...' : 'Sign Up'}
-          </div>
-        </button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className="text-white text-xl font-normal font-['Nunito'] text-center">
-          This page is accessible only to authorized personnel.
-        </div>
+
+          {/* Error message display */}
+          {error && (
+            <div className="w-[380px] bg-red-100 text-red-700 p-3 text-center rounded-lg border border-red-300">
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-  
-};
+}
 
 export default SignUp;
