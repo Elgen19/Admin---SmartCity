@@ -32,7 +32,7 @@ exports.verifySignupInvite = async (req, res) => {
 
 exports.signup = async (req, res) => {
   console.log('Sign Up called with data:', req.body);
-  const { token, name, password } = req.body;
+  const { token, name, password, phoneNumber } = req.body;
 
   try {
     // Find the invitation in the Firebase Realtime Database
@@ -73,6 +73,7 @@ exports.signup = async (req, res) => {
     // Save extra admin data in the Firebase Realtime Database
     await db.ref(`admins/${newUserRecord.uid}`).set({
       name,
+      phoneNumber,
       email,
       invitedBy: inviteData.invitedBy,
       createdAt: Date.now()

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import emailIcon from '../assets/images/Email.png';
 import backgroundImage from '../assets/images/Rectangle 18.png';
 import secureIcon from '../assets/images/Secure.png';
 import profileIcon from '../assets/images/Customer.png';
+import phoneIcon from '../assets/images/Phone.png'; // Import a phone icon if available
 import adminImage from '../assets/images/Smart city (1) 2.png';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../assets/lottifies/loading.json';
 
 function SignUp() {
   const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(''); // State for phone number
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
@@ -19,6 +19,7 @@ function SignUp() {
   const [tokenValid, setTokenValid] = useState(false);
   const [signUpProcessing, setSignUpProcessing] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [email, setEmail] = useState(''); // State to store email from token
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function SignUp() {
           // `https://smartcity-dn34.onrender.com/api/verify-invite?token=${token}`
           `http://localhost:5000/api/verify-invite?token=${token}`
         );
-        setEmail(response.data.email);
+        setEmail(response.data.email); // Store the email from the response
         setTokenValid(true);
         setLoading(false);
       } catch (err) {
@@ -58,18 +59,25 @@ function SignUp() {
     setError(null);
     setSignUpProcessing(true);
 
+    // Validate input fields
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       setSignUpProcessing(false);
       return;
     }
 
-    if (fullName.trim() === "") {
-      setError("Please input your full name");
+    if (fullName.trim() === '') {
+      setError('Please input your full name');
       setSignUpProcessing(false);
-      return; // Stop the function execution
+      return;
     }
-    
+
+    // Validate phone number: must be 11 digits long and start with '09'
+    if (!/^09\d{9}$/.test(phoneNumber)) {
+      setError('Phone number must be 11 characters long and start with "09".');
+      setSignUpProcessing(false);
+      return;
+    }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
@@ -78,21 +86,14 @@ function SignUp() {
     }
 
     setTimeout(async () => {
-      // try {
-      //   await axios.post('https://smartcity-dn34.onrender.com/api/signup', {
-      //     token,
-      //     name: fullName,
-      //     password,
-      //   });
-
-        try {
-          await axios.post('http://localhost:5000/api/signup', {
-            token,
-            name: fullName,
-            password,
-          });
-
-     
+      try {
+        await axios.post('http://localhost:5000/api/signup', {
+          token,
+          name: fullName,
+          email, // Send the email value directly from the state
+          password,
+          phoneNumber, // Include phone number in the signup request
+        });
 
         setVerificationSent(true);
       } catch (err) {
@@ -212,7 +213,7 @@ function SignUp() {
           </div>
 
           <div className="flex flex-col justify-start items-center gap-6">
-            {/* Input fields with adjusted padding/margin */}
+            {/* Full Name Input */}
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
                 <img className="w-8 h-8" src={profileIcon} alt="Full Name Icon" />
@@ -222,24 +223,25 @@ function SignUp() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter full name"
                   className="text-[#1e1e1e]/70 text-lg font-medium font-['Nunito'] bg-transparent outline-none w-full"
-                  required
                 />
               </div>
             </div>
+
+            {/* Phone Number Input */}
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
-                <img className="w-8 h-8" src={emailIcon} alt="Email Icon" />
+                <img className="w-8 h-8" src={phoneIcon} alt="Phone Icon" />
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email address"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="Enter phone number"
                   className="text-[#1e1e1e]/70 text-lg font-medium font-['Nunito'] bg-transparent outline-none w-full"
-                  required
-                  readOnly
                 />
               </div>
             </div>
+
+            {/* Password Input */}
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
                 <img className="w-8 h-8" src={secureIcon} alt="Password Icon" />
@@ -249,41 +251,39 @@ function SignUp() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   className="text-[#1e1e1e]/70 text-lg font-medium font-['Nunito'] bg-transparent outline-none w-full"
-                  required
                 />
               </div>
             </div>
+
+            {/* Confirm Password Input */}
             <div className="w-[380px] p-3 bg-white rounded-2xl shadow-lg border border-black/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-2">
-                <img className="w-8 h-8" src={secureIcon} alt="Confirm Password Icon" />
+                <img className="w-8 h-8" src={secureIcon} alt="Password Icon" />
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm password"
                   className="text-[#1e1e1e]/70 text-lg font-medium font-['Nunito'] bg-transparent outline-none w-full"
-                  required
                 />
               </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <p className="text-red-500 text-sm font-semibold text-center">
+                {error}
+              </p>
+            )}
+
+            {/* Sign Up Button */}
             <button
               onClick={handleSignUp}
-              className="bg-[#09d1e3] text-lg font-bold text-white rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105"
-              style={{
-                width: '380px', // Match the input width
-                height: '50px', // Adjust the button height
-              }}
+              className="w-[400px] p-3 text-white text-lg font-bold font-['Nunito'] rounded-2xl shadow-lg bg-[#09d1e3] hover:bg-[#05b1d1] transition-transform duration-300 hover:scale-105"
             >
               Sign Up
             </button>
           </div>
-
-          {/* Error message display */}
-          {error && (
-            <div className="w-[380px] bg-red-100 text-red-700 p-3 text-center rounded-lg border border-red-300">
-              {error}
-            </div>
-          )}
         </div>
       </div>
     </div>
