@@ -6,6 +6,10 @@ const bodyParser = require('body-parser');
 const inviteRoutes = require('./routes/inviteRoutes');
 const signupRoutes = require('./routes/signUpRoutes');
 const authRoutes  = require('./routes/authRoutes');
+const aiRoutes = require("./routes/aiRoutes");
+const ratingRoutes = require("./routes/ratingRoute");
+
+
 
 
 const app = express();
@@ -17,8 +21,14 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/ai", aiRoutes);
+
+
 
 app.use('/api', signupRoutes);
+
+app.use('/api/rating', ratingRoutes);
+
 
 
 app.use((err, req, res, next) => {

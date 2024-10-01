@@ -18,7 +18,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const navLinks = [
     { link: '/home', icon: home, label: 'Home' },
-    { link: '/admin-profile', icon: profile, label: 'Admin Profile' },
+    { link: '/profile', icon: profile, label: 'Admin Profile' },
     { link: '/user-management', icon: users, label: 'User Management' },
     { link: '/feedbacks', icon: feedback, label: 'Feedbacks' },
     { link: '/contents', icon: content, label: 'Contents' },

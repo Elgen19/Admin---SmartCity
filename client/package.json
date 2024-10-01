@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.20.0",
+    "@tensorflow-models/toxicity": "^1.2.2",
+    "@tensorflow/tfjs": "^4.21.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -14,6 +17,8 @@
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
+    "recharts": "^2.12.7",
+    "sentiment": "^5.0.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
