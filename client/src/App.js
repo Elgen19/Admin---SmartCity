@@ -7,6 +7,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import UserManagement from './pages/UserManagement';
+import Notification from './pages/Notifications';
+import FeedbackManagement from './pages/FeedbackManagement';
 
 import './styles/tailwind.css'
 
@@ -23,6 +25,9 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/notification" element={<Notification />} />
+        <Route path="/feedback-management" element={<FeedbackManagement />} />
+
 
 
 

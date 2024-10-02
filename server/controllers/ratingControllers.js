@@ -26,12 +26,17 @@ const getRatingStats = async (req, res) => {
         const highestRating = Math.max(...ratings);
         const lowestRating = Math.min(...ratings);
         const averageRating = (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(2);
+        // Count how many people gave the highest and lowest ratings
+        const highestCount = ratings.filter(rating => rating === highestRating).length;
+        const lowestCount = ratings.filter(rating => rating === lowestRating).length;
 
         // Return the calculated stats
         return res.json({
             highestRating,
             lowestRating,
-            averageRating
+            averageRating,
+            highestCount,
+            lowestCount,
         });
     } catch (error) {
         console.error("Error fetching ratings:", error);

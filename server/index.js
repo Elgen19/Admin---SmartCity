@@ -8,6 +8,8 @@ const signupRoutes = require('./routes/signUpRoutes');
 const authRoutes  = require('./routes/authRoutes');
 const aiRoutes = require("./routes/aiRoutes");
 const ratingRoutes = require("./routes/ratingRoute");
+const { analyzeFeedbackBasedOnTone } = require('./controllers/toneClassifierController');
+const { analyzeFeedbackBasedOnType } = require('./controllers/typeClassifierController');
 
 
 
@@ -22,6 +24,9 @@ app.use(bodyParser.json());
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/tone", analyzeFeedbackBasedOnTone);
+app.use("/api/type", analyzeFeedbackBasedOnType);
+
 
 
 

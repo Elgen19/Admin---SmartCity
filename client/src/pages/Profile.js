@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getDatabase, ref, get, update } from 'firebase/database'; // Import update method for updating records
-import { useNavigate } from 'react-router-dom';
-import adminImage from '../assets/images/Smart city (1) 2.png';
-import users from '../assets/images/Users.png';
-import profile from '../assets/images/profile.png';
-import feedback from '../assets/images/feedback.png';
-import content from '../assets/images/content.png';
-import home from '../assets/images/home.png';
-import photo from '../assets/images/male.png';
+import React, { useState, useEffect } from "react";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+import { getDatabase, ref, get, update } from "firebase/database"; // Import update method for updating records
+import { useNavigate } from "react-router-dom";
+import adminImage from "../assets/images/Smart city (1) 2.png";
+import users from "../assets/images/Users.png";
+import profile from "../assets/images/profile.png";
+import feedback from "../assets/images/feedback.png";
+import content from "../assets/images/content.png";
+import home from "../assets/images/home.png";
+import photo from "../assets/images/male.png";
 
 const Profile = () => {
-  const [activeLink, setActiveLink] = useState('/admin-profile');
-  const [updateMessage, setUpdateMessage] = useState(''); // State to hold the success or error message
+  const [activeLink, setActiveLink] = useState("/admin-profile");
+  const [updateMessage, setUpdateMessage] = useState(""); // State to hold the success or error message
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [adminData, setAdminData] = useState({ name: '', email: '', phoneNumber: '' }); // State to store admin data
+  const [adminData, setAdminData] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+  }); // State to store admin data
   const navigate = useNavigate();
   const navLinks = [
-    { link: '/home', icon: home, label: 'Home' },
-    { link: '/profile', icon: profile, label: 'Admin Profile' },
-    { link: '/user-management', icon: users, label: 'User Management' },
-    { link: '/feedbacks', icon: feedback, label: 'Feedbacks' },
-    { link: '/contents', icon: content, label: 'Contents' },
+    { link: "/home", icon: home, label: "Home" },
+    { link: "/profile", icon: profile, label: "Admin Profile" },
+    { link: "/user-management", icon: users, label: "User Management" },
+    { link: "/feedbacks", icon: feedback, label: "Feedbacks" },
+    { link: "/contents", icon: content, label: "Contents" },
   ];
 
   useEffect(() => {
@@ -34,7 +38,7 @@ const Profile = () => {
         fetchAdminData(user.uid); // Fetch admin data using the authenticated user's UID
       } else {
         setIsAuthenticated(false);
-        navigate('/'); // Redirect to login if not authenticated
+        navigate("/"); // Redirect to login if not authenticated
       }
     });
 
@@ -50,10 +54,10 @@ const Profile = () => {
       if (snapshot.exists()) {
         setAdminData(snapshot.val()); // Set admin data to state
       } else {
-        console.log('No data available');
+        console.log("No data available");
       }
     } catch (error) {
-      console.error('Error fetching admin data:', error);
+      console.error("Error fetching admin data:", error);
     }
   };
 
@@ -62,9 +66,9 @@ const Profile = () => {
     const auth = getAuth();
     try {
       await signOut(auth);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout Error:', error);
+      console.error("Logout Error:", error);
     }
   };
 
@@ -80,7 +84,7 @@ const Profile = () => {
 
     // Validate inputs
     if (!name.trim() || !phoneNumber.trim()) {
-      alert('Name and Phone Number cannot be empty.');
+      alert("Name and Phone Number cannot be empty.");
       return;
     }
 
@@ -89,10 +93,10 @@ const Profile = () => {
     const adminRef = ref(db, `admins/${getAuth().currentUser.uid}`);
     try {
       await update(adminRef, { name, phoneNumber });
-      setUpdateMessage('Profile updated successfully!');
+      setUpdateMessage("Profile updated successfully!");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setUpdateMessage('Failed to update profile. Please try again.');
+      console.error("Error updating profile:", error);
+      setUpdateMessage("Failed to update profile. Please try again.");
     }
   };
 
@@ -105,7 +109,11 @@ const Profile = () => {
       {/* Sidebar */}
       <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col">
         {/* Company Logo */}
-        <img className="w-[200px] h-[200px] mx-auto mb-10" src={adminImage} alt="Company Logo" />
+        <img
+          className="w-[200px] h-[200px] mx-auto mb-10"
+          src={adminImage}
+          alt="Company Logo"
+        />
         <nav className="space-y-6">
           {navLinks.map(({ link, icon, label }) => (
             <a
@@ -113,9 +121,11 @@ const Profile = () => {
               href={link}
               onClick={() => setActiveLink(link)}
               className={`flex items-center text-white text-xl hover:text-[#09d1e3] transition ${
-                activeLink === link ? 'font-bold border-l-4 border-[#09d1e3] pl-3' : ''
+                activeLink === link
+                  ? "font-bold border-l-4 border-[#09d1e3] pl-3"
+                  : ""
               }`}
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: "none" }}
             >
               <img className="w-8 h-8 mr-3" src={icon} alt={`${label} Icon`} />
               {label}
@@ -135,15 +145,23 @@ const Profile = () => {
 
       {/* Profile Information */}
       <div className="flex-1 flex flex-col items-center justify-center p-10">
-        <h1 className="text-[#09d1e3] text-4xl font-extrabold mb-6">Admin Profile</h1>
-        <img className="w-[200px] h-[200px] rounded-full mb-6" src={photo} alt="Admin Profile" />
+        <h1 className="text-[#09d1e3] text-4xl font-extrabold mb-6">
+          Admin Profile
+        </h1>
+        <img
+          className="w-[200px] h-[200px] rounded-full mb-6"
+          src={photo}
+          alt="Admin Profile"
+        />
 
         {/* Profile Details */}
         <div className="w-full max-w-md space-y-4">
           {/* Email Address Input */}
           {/* Email Address Input */}
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
+            <label className="block text-gray-700 text-sm font-semibold mb-2">
+              Email Address
+            </label>
             <input
               type="email"
               value={adminData.email}
@@ -152,10 +170,11 @@ const Profile = () => {
             />
           </div>
 
-
           {/* Full Name Input */}
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2">Full Name</label>
+            <label className="block text-gray-700 text-sm font-semibold mb-2">
+              Full Name
+            </label>
             <input
               type="text"
               name="name"
@@ -167,7 +186,9 @@ const Profile = () => {
 
           {/* Phone Number Input */}
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2">Phone Number</label>
+            <label className="block text-gray-700 text-sm font-semibold mb-2">
+              Phone Number
+            </label>
             <input
               type="tel"
               name="phoneNumber"
@@ -178,21 +199,26 @@ const Profile = () => {
           </div>
 
           {/* Update Button */}
-         {/* Update Button */}
-<button
-  onClick={handleUpdate}
-  className="w-[475px] h-12 bg-[#09d1e3] text-white font-semibold rounded-lg mt-4 hover:bg-[#06b4c5] transition"
->
-  Update
-</button>
+          {/* Update Button */}
+          <button
+            onClick={handleUpdate}
+            className="w-[475px] h-12 bg-[#09d1e3] text-white font-semibold rounded-lg mt-4 hover:bg-[#06b4c5] transition"
+          >
+            Update
+          </button>
 
-{/* Success or Error Message */}
-{updateMessage && (
-  <p className={`mt-4 text-center ${updateMessage.includes('successfully') ? 'text-green-600' : 'text-red-600'}`}>
-    {updateMessage}
-  </p>
-)}
-
+          {/* Success or Error Message */}
+          {updateMessage && (
+            <p
+              className={`mt-4 text-center ${
+                updateMessage.includes("successfully")
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {updateMessage}
+            </p>
+          )}
         </div>
       </div>
     </div>

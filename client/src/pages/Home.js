@@ -57,6 +57,11 @@ const Home = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  const handleNotificationClick = () => {
+    navigate("/notification"); // Navigate to /notification when the bell is clicked
+  };
+
+
 
 
 
@@ -309,7 +314,9 @@ const Home = () => {
           <label className="text-2xl font-bold text-[#141d70]">
             {greeting}
           </label>
-          <button className="ml-4 bg-transparent p-0 border-none">
+          <button className="ml-4 bg-transparent p-0 border-none"
+          onClick={handleNotificationClick} 
+          >
             <img
               src={notificationBell}
               alt="Notification Bell"
