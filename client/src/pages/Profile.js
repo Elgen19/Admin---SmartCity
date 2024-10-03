@@ -25,7 +25,7 @@ const Profile = () => {
     { link: "/profile", icon: profile, label: "Admin Profile" },
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedbacks", icon: feedback, label: "Feedbacks" },
-    { link: "/contents", icon: content, label: "Contents" },
+    { link: "/content-management", icon: content, label: "Contents" },
   ];
 
   useEffect(() => {

@@ -23,6 +23,7 @@ import feedback from "../assets/images/feedback.png";
 import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import notificationBell from "../assets/images/notification-bell.png";
+import activeHome from "../assets/images/active_home.png"
 
 const Home = () => {
   
@@ -252,8 +253,8 @@ const Home = () => {
     { link: "/home", icon: home, label: "Home" },
     { link: "/profile", icon: profile, label: "Admin Profile" },
     { link: "/user-management", icon: users, label: "User Management" },
-    { link: "/feedbacks", icon: feedback, label: "Feedbacks" },
-    { link: "/contents", icon: content, label: "Contents" },
+    { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
+    { link: "/content-management", icon: content, label: "Contents" },
   ];
 
   const handleLogout = () => {
@@ -270,42 +271,47 @@ const Home = () => {
       }, {});
   };
 
+  
   return (
     <div className="flex h-screen bg-white font-nunito">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col">
-        <img
-          className="w-[200px] h-[200px] mx-auto mb-10"
-          src={adminImage}
-          alt="Company Logo"
-        />
-        <nav className="space-y-6">
-          {navLinks.map(({ link, icon, label }) => (
+     {/* Sidebar */}
+<div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+    <img
+        className="w-[200px] h-[200px] mx-auto mb-10"
+        src={adminImage} // Updated with your image path
+        alt="Company Logo"
+    />
+    <nav className="space-y-6">
+        {navLinks.map(({ link, icon, label }) => (
             <a
-              key={link}
-              href={link}
-              onClick={() => setActiveLink(link)}
-              className={`flex items-center text-white text-xl hover:text-[#09d1e3] transition ${
-                activeLink === link
-                  ? "font-bold border-l-4 border-[#09d1e3] pl-3"
-                  : ""
-              }`}
-              style={{ textDecoration: "none" }}
+                key={link}
+                href={link}
+                onClick={() => setActiveLink(link)}
+                className={`flex items-center text-xl transition ${
+                    activeLink === link
+                        ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3" // Active link color
+                        : "text-white hover:text-[#09d1e3]"
+                }`}
+                style={{ textDecoration: "none" }}
             >
-              <img className="w-8 h-8 mr-3" src={icon} alt={`${label} Icon`} />
-              {label}
+                <img
+                    className="w-8 h-8 mr-3 transition"
+                    src={activeLink === link ? activeHome: icon} // Use active icon if link is active
+                    alt={`${label} Icon`}
+                />
+                {label}
             </a>
-          ))}
-        </nav>
-        <div className="mt-auto">
-          <button
+        ))}
+    </nav>
+    <div className="mt-auto">
+        <button
             onClick={handleLogout}
             className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
-          >
+        >
             Logout
-          </button>
-        </div>
-      </div>
+        </button>
+    </div>
+</div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col p-6 overflow-y-auto">

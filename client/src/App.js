@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import UserManagement from './pages/UserManagement';
 import Notification from './pages/Notifications';
 import FeedbackManagement from './pages/FeedbackManagement';
+import ContentManagement from './pages/ContentManagement';
 
 import './styles/tailwind.css'
 
@@ -27,6 +28,8 @@ function App() {
         <Route path="/user-management" element={<UserManagement />} />
         <Route path="/notification" element={<Notification />} />
         <Route path="/feedback-management" element={<FeedbackManagement />} />
+        <Route path="/content-management" element={<ContentManagement />} />
+
 
 
 
