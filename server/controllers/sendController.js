@@ -1,13 +1,7 @@
 const admin = require('firebase-admin');
 const transporter = require('../config/mailConfig');
 
-// Initialize Firebase Admin SDK if not already initialized
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(), // Or use a service account key if necessary
-    databaseURL: "https://<your-database-name>.firebaseio.com" // Replace with your Firebase Realtime Database URL
-  });
-}
+
 
 const db = admin.database();
 

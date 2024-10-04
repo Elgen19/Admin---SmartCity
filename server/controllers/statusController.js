@@ -1,4 +1,4 @@
-const { transporter } = require('../config/mailConfig'); // Import the transporter
+const transporter = require('../config/mailConfig');
 const fs = require('fs');
 const path = require('path');
 const Handlebars = require('handlebars');

@@ -42,6 +42,7 @@ const ContentManagement = () => {
 
   const navigate = useNavigate();
   const auth = getAuth()
+  const currentUserId = auth.currentUser
 
   // Fetch data from Firebase on component mount
   useEffect(() => {
@@ -132,10 +133,16 @@ const ContentManagement = () => {
         }),
       })
         .then((response) => response.json())
-        .then((data) => {
+        .then(async (data) => {
           if (data.message) {
             console.log(data.message); // Show success message from response
             setShowAlert(true); // Show alert or other notification
+
+            await logAdminActivity(
+              currentUserId.uid,
+              `Broadcasted content through email with title: ${content.title}, message: ${content.message}, audience: ${content.audience}, contentType: ${content.contentType}, channel: ${content.channel}}`,
+              "Content Management Page"
+            );
           } else {
             const auth = getAuth();
      console.error(
@@ -163,9 +170,14 @@ const ContentManagement = () => {
 
         // Push the new notification to Firebase Realtime Database
         push(notificationsRef, newNotification) // Use push() to create a new entry
-          .then(() => {
+          .then(async () => {
             console.log("In-app notification sent to admins successfully.");
             setShowAlert(true); // Display an alert or confirmation
+            await logAdminActivity(
+              currentUserId.uid,
+              `Broadcasted content through in-app notification with title: ${content.title}, message: ${content.message}, audience: ${content.audience}, contentType: ${content.contentType}, channel: ${content.channel}}`,
+              "Content Management Page"
+            );
           })
           .catch((error) => {
             console.error("Error sending in-app notification:", error);
@@ -205,7 +217,85 @@ const ContentManagement = () => {
     return newErrors;
   };
 
-  const handleSubmit = () => {
+  // const handleSubmit = async  () => {
+  //   // Validate form data
+  //   const validationErrors = validateForm();
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //     return; // Prevent submission if there are validation errors
+  //   }
+
+ 
+
+  //   if (editingId) {
+  //     // Update existing content
+  //     const existingContentRef = ref(getDatabase(), `Contents/${editingId}`);
+  //     const existingContentSnapshot = await get(existingContentRef); // Fetch existing content before updating
+  //     const existingContent = existingContentSnapshot.val();
+
+
+  //     const updatedContent = {
+  //       title: formData.title,
+  //       message: formData.message,
+  //       audience: formData.audience,
+  //       contentType: formData.contentType,
+  //       channel: formData.channel,
+  //       userName: currentUserId.displayName, // Add current user name
+  //       userEmail: currentUserId.email, // Add current user email
+  //       timestamp: Date.now(), // Use current timestamp for updated records
+  //     };
+
+  //     // Update the content in Firebase using set()
+  //     const contentRef = ref(getDatabase(), `Contents/${editingId}`);
+  //     set(contentRef, updatedContent) // Use set instead of push
+  //       .then(async () => {
+  //         setShowAlert(true); // Show success alert
+  //         setIsFormOpen(false); // Close the form
+  //         setEditingId(null); // Reset editingId
+  //           // Log the edit activity
+  //     await logAdminActivity(
+  //       currentUserId.uid,
+  //       "fgfgfg",
+  //       // `Edited content from: \ntitle: ${existingContent.title}, message: ${existingContent.message}, audience: ${existingContent.audience}, contentType: ${existingContent.contentType}, channel: ${existingContent.channel} \nto: \ntitle: ${updatedContent.title}, message: ${updatedContent.message}, audience: ${updatedContent.audience}, contentType: ${updatedContent.contentType}, channel: ${updatedContent.channel}}`,
+  //       "Content Management Page"
+  //     );
+  //       })
+
+        
+  //       .catch((error) => {
+  //         console.error("Error updating content: ", error);
+  //       });
+  //   } else {
+  //     // Create new content
+  //     const newContent = {
+  //       title: formData.title,
+  //       message: formData.message,
+  //       audience: formData.audience,
+  //       contentType: formData.contentType,
+  //       channel: formData.channel,
+  //       userName: currentUser.displayName, // Add current user name
+  //       userEmail: currentUser.email, // Add current user email
+  //       timestamp: Date.now(), // Use current timestamp for new records
+  //     };
+
+  //     // Push new content to Firebase
+  //     const contentsRef = ref(getDatabase(), "Contents");
+  //     push(contentsRef, newContent)
+  //       .then( async () => {
+  //         setShowAlert(true); // Show success alert
+  //         setIsFormOpen(false); // Close the form
+  //         await logAdminActivity(
+  //           currentUserId.uid,
+  //           `Added content with title: ${newContent.title}, message: ${newContent.message}, audience: ${newContent.audience}, contentType: ${newContent.contentType}, channel: ${newContent.channel}`,
+  //           "Content Management Page"
+  //         );        })
+  //       .catch((error) => {
+  //         console.error("Error creating content: ", error);
+  //       });
+  //   }
+  // };
+
+  const handleSubmit = async  () => {
     // Validate form data
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -217,6 +307,9 @@ const ContentManagement = () => {
     const currentUser = getAuth().currentUser;
 
     if (editingId) {
+      const existingContentRef = ref(getDatabase(), `Contents/${editingId}`);
+      const existingContentSnapshot = await get(existingContentRef); // Fetch existing content before updating
+      const existingContent = existingContentSnapshot.val();
       // Update existing content
       const updatedContent = {
         title: formData.title,
@@ -229,15 +322,20 @@ const ContentManagement = () => {
         timestamp: Date.now(), // Use current timestamp for updated records
       };
 
+    
+
       // Update the content in Firebase using set()
       const contentRef = ref(getDatabase(), `Contents/${editingId}`);
       set(contentRef, updatedContent) // Use set instead of push
-        .then(() => {
+        .then(async() => {
           setShowAlert(true); // Show success alert
           setIsFormOpen(false); // Close the form
           setEditingId(null); // Reset editingId
-          // Optionally, fetch updated contents if needed
-        })
+          await logAdminActivity(
+            currentUser.uid,
+            `Edited content from: title ${existingContent.title}, message: ${existingContent.message}, audience: ${existingContent.audience}, contentType: ${existingContent.contentType}, channel: ${existingContent.channel} TO title ${updatedContent.title}, message: ${updatedContent.message}, audience: ${updatedContent.audience}, contentType: ${updatedContent.contentType}, channel: ${updatedContent.channel}`,
+            "Content Management Page"
+          );        })
         .catch((error) => {
           console.error("Error updating content: ", error);
         });
@@ -254,6 +352,12 @@ const ContentManagement = () => {
         timestamp: Date.now(), // Use current timestamp for new records
       };
 
+      await logAdminActivity(
+        currentUser.uid,
+        `Added content with title ${newContent.title}, message: ${newContent.message}, audience: ${newContent.audience}, contentType: ${newContent.contentType}, channel: ${newContent.channel}`,
+        "Content Management Page"
+      );
+
       // Push new content to Firebase
       const contentsRef = ref(getDatabase(), "Contents");
       push(contentsRef, newContent)
@@ -268,14 +372,24 @@ const ContentManagement = () => {
     }
   };
 
-  const handleDeleteClick = (contentId) => {
-    // Confirm before deleting
+  const handleDeleteClick = async (contentId) => {
+    const contentRef = ref(getDatabase(), `Contents/${contentId}`);
+    const contentSnapshot = await get(contentRef); // Fetch content to log before deletion
+
     if (window.confirm("Are you sure you want to delete this content?")) {
-      const contentRef = ref(getDatabase(), `Contents/${contentId}`);
       remove(contentRef)
-        .then(() => {
+        .then(async () => {
+          const deletedContent = contentSnapshot.val();
+          // Log the deletion activity
+          const user = auth.currentUser;
+          if (user) {
+            await logAdminActivity(
+              user.uid,
+              `Deleted content with title ${deletedContent.title}, message: ${deletedContent.message}, audience: ${deletedContent.audience}, contentType: ${deletedContent.contentType}, channel: ${deletedContent.channel}`,
+              "Content Management Page"
+            );
+          }
           console.log("Content deleted successfully");
-          // Optionally, update the content list if needed
         })
         .catch((error) => {
           console.error("Error deleting content: ", error);

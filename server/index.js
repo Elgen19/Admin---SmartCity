@@ -10,7 +10,7 @@ const aiRoutes = require("./routes/aiRoutes");
 const ratingRoutes = require("./routes/ratingRoute");
 const { analyzeFeedbackBasedOnTone } = require('./controllers/toneClassifierController');
 const { analyzeFeedbackBasedOnType } = require('./controllers/typeClassifierController');
-const { sendContentToAudience } = require('./controllers/sendController');
+const sendContentToAudienceRoutes = require('./routes/sendRoutes');
 const notifyRoutes = require('./routes/notifyRoutes');
 const { sendAccountStatusEmail } = require('./controllers/statusController');
 
@@ -32,7 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/tone", analyzeFeedbackBasedOnTone);
 app.use("/api/type", analyzeFeedbackBasedOnType);
-app.use("/api/sender", sendContentToAudience);
+app.use("/api/sender", sendContentToAudienceRoutes);
 app.use("/api/notify", notifyRoutes);
 
 

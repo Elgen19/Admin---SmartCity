@@ -1,6 +1,6 @@
 // controllers/emailController.js
 
-const { transporter } = require('../config/mailConfig'); // Import your existing Nodemailer configuration
+const transporter = require('../config/mailConfig');
 
 // Send notification email
 const sendNotificationEmail = async (req, res) => {
