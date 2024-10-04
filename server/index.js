@@ -11,16 +11,21 @@ const ratingRoutes = require("./routes/ratingRoute");
 const { analyzeFeedbackBasedOnTone } = require('./controllers/toneClassifierController');
 const { analyzeFeedbackBasedOnType } = require('./controllers/typeClassifierController');
 const { sendContentToAudience } = require('./controllers/sendController');
+const notifyRoutes = require('./routes/notifyRoutes');
+const { sendAccountStatusEmail } = require('./controllers/statusController');
+
 
 
 
 
 const app = express();
 
+
+
+
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
-
 // Routes
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
@@ -28,6 +33,8 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/tone", analyzeFeedbackBasedOnTone);
 app.use("/api/type", analyzeFeedbackBasedOnType);
 app.use("/api/sender", sendContentToAudience);
+app.use("/api/notify", notifyRoutes);
+
 
 
 
@@ -36,6 +43,8 @@ app.use("/api/sender", sendContentToAudience);
 app.use('/api', signupRoutes);
 
 app.use('/api/rating', ratingRoutes);
+app.use('/api/status', sendAccountStatusEmail);
+
 
 
 

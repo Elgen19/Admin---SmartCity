@@ -6,12 +6,45 @@ import secureIcon from '../assets/images/Secure.png';
 import adminImage from '../assets/images/Smart city (1) 2.png';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { getDatabase, ref, get } from 'firebase/database';
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showModal, setShowModal] = useState(false);  // State for modal visibility
+    const [modalMessage, setModalMessage] = useState(''); // State for modal message
     const navigate = useNavigate();
+
+    // Firebase Realtime Database instance
+    const db = getDatabase();
+
+    // Modal Component
+    const AlertDialog = ({ message, onClose }) => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
+                <h2 className="text-2xl font-bold text-red-600">Security Alert</h2>
+                <p className="text-gray-700">{message}</p>
+                <button
+                    onClick={onClose}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    );
+
+    const checkAdminApproval = async (uid) => {
+        const adminRef = ref(db, `admins/${uid}`);
+        const snapshot = await get(adminRef);
+        if (snapshot.exists()) {
+            const adminData = snapshot.val();
+            return adminData.isApproved === true; // Check if admin is approved
+        } else {
+            return false; // If admin data doesn't exist or isApproved is false
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,25 +52,38 @@ const SignIn = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // 1. Check if the email is verified
             if (!user.emailVerified) {
                 await sendEmailVerification(user);
-                setError('Your email is not verified. A verification link has been sent to your email address.');
+                setModalMessage('Your email is not verified. A verification link has been sent to your email address.');
+                setShowModal(true); // Show modal with verification message
                 auth.signOut();
                 return;
             }
 
-            navigate('/profile');
+            // 2. Check if the admin is approved
+            const isAdminApproved = await checkAdminApproval(user.uid);
+            if (!isAdminApproved) {
+                setModalMessage('Your admin request is still pending approval. Please contact the admin.');
+                setShowModal(true); // Show modal with approval message
+                auth.signOut();
+                return;
+            }
+
+            // 3. If both email is verified and admin is approved, navigate to profile
+            navigate('/home');
         } catch (err) {
-            setError(err.message);
+            setModalMessage(err.message); // Show modal with error message (like authentication failed)
+            setShowModal(true);
         }
     };
 
     const handleForgotPassword = () => {
-        navigate('/forgot-password'); // Ensure your route is correctly defined in your router setup
+        navigate('/forgot-password');
     };
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen relative">
             {/* Left Side: Background Image */}
             <div className="w-3/5 relative">
                 <img className="absolute inset-0 object-cover w-full h-full" alt="background" src={backgroundImage} />
@@ -72,7 +118,6 @@ const SignIn = () => {
                                 required
                             />
                         </div>
-                        {error && <p className="text-red-500 text-center mb-4 font-medium">{error}</p>}
                         <div className="flex justify-between items-center text-sm mb-6">
                             <label className="flex items-center text-gray-800 font-nunito">
                                 <input type="checkbox" className="mr-2" />
@@ -98,6 +143,14 @@ const SignIn = () => {
                     This page is accessible only to authorized personnel.
                 </div>
             </div>
+
+            {/* Show Modal if an error or message is triggered */}
+            {showModal && (
+                <AlertDialog
+                    message={modalMessage}
+                    onClose={() => setShowModal(false)} // Close the modal when clicked
+                />
+            )}
         </div>
     );
 };

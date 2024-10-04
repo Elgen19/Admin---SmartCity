@@ -76,7 +76,11 @@ exports.signup = async (req, res) => {
       phoneNumber,
       email,
       invitedBy: inviteData.invitedBy,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      isApproved: false,
+      role: "Admin",
+      access: "FEEDBACK_MANAGEMENT, HOME, CONTENT_MANAGEMENT, NOTIFICATIONS, ADMIN_PROFILE",
+      active: true,
     });
 
     // Send email verification link

@@ -10,15 +10,18 @@ import UserManagement from './pages/UserManagement';
 import Notification from './pages/Notifications';
 import FeedbackManagement from './pages/FeedbackManagement';
 import ContentManagement from './pages/ContentManagement';
-
+import ApproveDenyAdmin from './pages/ApproveDenyAdmin';
+import UpdateAdminAccess from './pages/UpdateAdminAccess';
+import ActivateDeactivateAccount from './pages/ActivateDeactivateAccount';
+import ActivityLogs from './pages/ActivityLogs';
 import './styles/tailwind.css'
-
 
 
 function App() {
   return (
     <Router>
       <Routes>
+     
         <Route path="/" element={<SignIn />} />
         <Route path="/invite" element={<Invite />} />
         <Route path="/signup" element={<Signup />} />
@@ -29,6 +32,15 @@ function App() {
         <Route path="/notification" element={<Notification />} />
         <Route path="/feedback-management" element={<FeedbackManagement />} />
         <Route path="/content-management" element={<ContentManagement />} />
+        <Route path="/approve-deny-admins" element={<ApproveDenyAdmin />} />
+        <Route path="/update-admin-permission" element={<UpdateAdminAccess />} />
+        <Route path="/activate-deactivate-account" element={<ActivateDeactivateAccount />} />
+        <Route path="/admin-activity-logs" element={<ActivityLogs />} />
+
+
+
+
+
 
 
 
