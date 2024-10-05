@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Invitation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa; /* Light background */
+            padding: 20px;
+            color: #000000; /* Set body text color to black */
+            margin: 0; /* Remove default margins */
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff; /* Button text color set to white */
+            background-color: #007bff; /* Set button background color */
+            text-decoration: none;
+            border-radius: 5px;
+            border: none; /* Remove border */
+            cursor: pointer; /* Change cursor to pointer */
+            font-weight: bold; /* Make button text bold */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+        }
+        .button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+         p {
+      font-size: 16px;
+      color: #000000;
+      line-height: 1.6;
+    }
+
+      h1 {
+      color: #09d1e3; /* New title color */
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    </style>
+</head>
+<body>
+    <h1>Admin Invitation</h1>
+    <p>Hello,</p>
+    <p>You have been invited to join as an admin for our application. Click the button below to sign up:</p>
+    <a href="{{signupLink}}" class="button" style="background-color: #007bff; color: #ffffff;">Join as Admin</a>
+    <p>This link will expire in 24 hours.</p>
+    <p>If you did not expect this invitation, please ignore this email.</p>
+    <p>Best regards,<br>SmartCity Team</p>
+</body>
+</html>

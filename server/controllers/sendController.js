@@ -1,9 +1,20 @@
 const admin = require('firebase-admin');
 const transporter = require('../config/mailConfig');
-
-
+const handlebars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
 
 const db = admin.database();
+
+// Function to read the Handlebars template
+const readTemplate = (filePath) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+      if (err) reject(err);
+      resolve(data);
+    });
+  });
+};
 
 // Controller function to handle sending content
 const sendContentToAudience = async (req, res) => {
@@ -16,7 +27,6 @@ const sendContentToAudience = async (req, res) => {
       const snapshot = await db.ref(nodePath).once('value');
       if (snapshot.exists()) {
         const data = snapshot.val();
-        // Iterate through users/admins and extract their emails
         for (const id in data) {
           if (data[id].email) {
             emails.push(data[id].email);
@@ -50,12 +60,20 @@ const sendContentToAudience = async (req, res) => {
 
     // If the selected channel is email, send the email
     if (channel === 'email') {
+      // Read and compile the Handlebars template
+      const templatePath = path.join(__dirname, '../templates/contentManagement.hbs');
+      const templateContent = await readTemplate(templatePath);
+      const template = handlebars.compile(templateContent);
+
+      // Replace template variables with actual values
+      const htmlToSend = template({ title, message });
+
       // Email options
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: emailRecipients.join(','),
         subject: `New Announcement: ${title}`,
-        text: message,
+        html: htmlToSend,  // Use the compiled HTML
       };
 
       // Send email using the transporter

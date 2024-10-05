@@ -1,7 +1,9 @@
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const handlebars = require('handlebars');
+const fs = require('fs');
 const firebase = require('../config/firebase'); // Import firebase setup
 const db = firebase.database();
+const transporter = require('../config/mailConfig'); // Import the transporter from mailConfig
 
 // Send invite to a new admin
 exports.sendInvite = async (req, res) => {
@@ -16,7 +18,7 @@ exports.sendInvite = async (req, res) => {
 
   try {
     // Check if an admin already exists with the provided email
-    const existingAdminRef = await db.ref('Admins').orderByChild('email').equalTo(email).once('value');
+    const existingAdminRef = await db.ref('admins').orderByChild('email').equalTo(email).once('value');
     const existingAdmin = existingAdminRef.val();
 
     if (existingAdmin) {
@@ -35,30 +37,25 @@ exports.sendInvite = async (req, res) => {
       invitedBy: adminId,
     });
 
-    // Configure nodemailer for sending email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Generate the signup link (you can replace with your frontend URL)
- 
-    // const signupLink = `https://admin-smart-city.vercel.app/signup?token=${token}`;
-
+    // Generate the signup link
     const signupLink = `http://localhost:3000/signup?token=${token}`;
 
-    
+    // Read the Handlebars template
+    const templateSource = fs.readFileSync('templates/adminInvitation.hbs', 'utf8');
+    const template = handlebars.compile(templateSource);
+
+    // Generate the email HTML
+    const emailHTML = template({ signupLink });
+
+    // Setup email data
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Admin Invitation',
-      text: `You have been invited to join as an admin. Click the link to sign up: ${signupLink}. This link will expire in 24 hours.`,
+      html: emailHTML, // Use the generated HTML from the template
     };
 
-    // Send email
+    // Send email using the transporter from mailConfig
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'Invitation sent!' });
   } catch (error) {
@@ -66,10 +63,6 @@ exports.sendInvite = async (req, res) => {
     res.status(500).json({ message: 'Error sending invitation' });
   }
 };
-
-
-
-
 
 // Verify the invitation token
 exports.verifyInvite = async (req, res) => {
@@ -98,6 +91,3 @@ exports.verifyInvite = async (req, res) => {
     res.status(500).json({ message: 'Error verifying invitation token' });
   }
 };
-
-
-
