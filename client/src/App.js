@@ -14,6 +14,8 @@ import ApproveDenyAdmin from './pages/ApproveDenyAdmin';
 import UpdateAdminAccess from './pages/UpdateAdminAccess';
 import ActivateDeactivateAccount from './pages/ActivateDeactivateAccount';
 import ActivityLogs from './pages/ActivityLogs';
+import PromoteAdmin from './pages/PromoteAdmin';
+
 import './styles/tailwind.css'
 
 
@@ -36,6 +38,7 @@ function App() {
         <Route path="/update-admin-permission" element={<UpdateAdminAccess />} />
         <Route path="/activate-deactivate-account" element={<ActivateDeactivateAccount />} />
         <Route path="/admin-activity-logs" element={<ActivityLogs />} />
+        <Route path="/promote-admin" element={<PromoteAdmin />} />
 
 
 

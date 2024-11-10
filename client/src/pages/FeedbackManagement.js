@@ -20,6 +20,9 @@ import feedback from "../assets/images/feedback.png";
 import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import activeFeedback from "../assets/images/active_feedback.png";
+import Lottie from 'lottie-react'
+import animationData from '../assets/lottifies/feeback.json';
+import HeaderCards from '../components/HeaderCards.js';
 
 const FeedbackManagement = () => {
   const [activeLink, setActiveLink] = useState("/feedback-management");
@@ -210,17 +213,25 @@ const FeedbackManagement = () => {
   useEffect(() => {
     const fetchRatingStats = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/rating/get-ratings"
-        );
+        const response = await axios.get("http://localhost:5000/api/rating/get-ratings");
         setRatingStats(response.data);
+      } catch (error) {
+        // Check if it's a 404 error
+        if (error.response && error.response.status === 404) {
+          console.error("Endpoint not found (404):", error.response.data);
+          setError("Rating statistics not found.");
+        } else {
+          console.error("An error occurred while fetching rating stats:", error);
+          setError("An unexpected error occurred.");
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchRatingStats();
   }, []);
+  
 
   useEffect(() => {
     const auth = getAuth();
@@ -340,7 +351,7 @@ const FeedbackManagement = () => {
       ) : (
      <div className="flex h-screen bg-white font-nunito">
         {/* Sidebar */}
-        <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+        <div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
           <img
             className="w-[200px] h-[200px] mx-auto mb-10"
             src={adminImage} // Updated with your image path
@@ -380,14 +391,13 @@ const FeedbackManagement = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-start justify-start p-10 overflow-auto">
-          <h1 className="text-[#09d1e3] text-4xl font-extrabold mb-0 leading-tight">
-            Feedback Management
-          </h1>
-
-          <p className="text-gray-700 text-base mb-0 leading-tight">
-            Explore user feedback, including positive and negative reviews, to
-            gain insights and enhance user satisfaction.
-          </p>
+        <HeaderCards
+        title="Feedbacks"
+        description="Explore user feedback, including positive and negative reviews, to
+            gain insights and enhance user satisfaction."
+        animationData={animationData}
+      />
+        
 
           {/* Positive Feedbacks Section */}
           {!showAllNegative && (

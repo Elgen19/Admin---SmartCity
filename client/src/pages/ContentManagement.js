@@ -20,6 +20,9 @@ import home from "../assets/images/home.png";
 import editIcon from "../assets/images/edit.png";
 import deleteIcon from "../assets/images/delete.png";
 import sendIcon from "../assets/images/send.png";
+import Lottie from "lottie-react";
+import animationData from "../assets/lottifies/content_management.json";
+import HeaderCards from "../components/HeaderCards.js";
 
 const ContentManagement = () => {
   const [activeLink, setActiveLink] = useState("/content-management");
@@ -39,10 +42,69 @@ const ContentManagement = () => {
     contentType: "",
     channel: "", // New field for channel
   });
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [selectedContent, setSelectedContent] = useState(null);
   const navigate = useNavigate();
-  const auth = getAuth()
-  const currentUserId = auth.currentUser
+  const auth = getAuth();
+  const currentUserId = auth.currentUser;
+
+  // Handle scheduled time change
+  const handleOpenDialog = (content) => {
+    setSelectedContent(content); // Store the content to send
+    setIsDialogOpen(true); // Open the dialog
+  };
+
+  // Update handlers for frequency and time
+  const handleTimeChange = (event) => setScheduledTime(event.target.value);
+  const handleFrequencyChange = (event) => setFrequency(event.target.value);
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setFrequency(""); // Clear settings on close
+    setScheduledTime("");
+  };
+
+  // Handle send now action
+  const handleSendNow = () => {
+    handleSendClick(selectedContent); // Call your handleSendClick method
+    setIsDialogOpen(false); // Close the dialog
+  };
+
+  // Handle send later action
+  const handleSendLater = () => {
+    // Ensure all necessary fields are defined before pushing
+    const scheduledContent = {
+      title: selectedContent.title || "Untitled Content",
+      timestamp: selectedContent.timestamp || new Date().toISOString(),
+      isBroadcasted: false,
+      channel: selectedContent.channel || "General",
+      frequency: frequency || "once",
+      message: selectedContent.message,
+      scheduledTime: scheduledTime || new Date().toISOString(), // Default to now if no time is set
+    };
+
+    // Validate required fields
+    if (!scheduledContent.title || !scheduledContent.scheduledTime) {
+      alert("Please provide all required fields for scheduling.");
+      return;
+    }
+
+    // Push to Firebase using getDatabase() instance
+    const db = getDatabase();
+    push(ref(db, "ScheduledContents"), scheduledContent)
+      .then(() => {
+        alert("Content scheduled successfully!");
+        setIsDialogOpen(false);
+        setFrequency("");
+        setScheduledTime("");
+      })
+      .catch((error) => {
+        console.error("Error scheduling content:", error);
+        alert("There was an error scheduling the content.");
+      });
+  };
 
   // Fetch data from Firebase on component mount
   useEffect(() => {
@@ -58,7 +120,7 @@ const ContentManagement = () => {
     });
 
     return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
+  }, [contentList]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -108,9 +170,7 @@ const ContentManagement = () => {
     });
     setIsFormOpen(true); // Open the form for editing
 
-     // Log the admin activity after sending the invite
-   
-
+    // Log the admin activity after sending the invite
   };
 
   const handleSendClick = (content) => {
@@ -145,7 +205,7 @@ const ContentManagement = () => {
             );
           } else {
             const auth = getAuth();
-     console.error(
+            console.error(
               "Failed to send content: No message returned from the server."
             );
           }
@@ -217,7 +277,6 @@ const ContentManagement = () => {
     return newErrors;
   };
 
-  // const handleSubmit = async  () => {
   //   // Validate form data
   //   const validationErrors = validateForm();
   //   if (Object.keys(validationErrors).length > 0) {
@@ -225,14 +284,11 @@ const ContentManagement = () => {
   //     return; // Prevent submission if there are validation errors
   //   }
 
- 
-
   //   if (editingId) {
   //     // Update existing content
   //     const existingContentRef = ref(getDatabase(), `Contents/${editingId}`);
   //     const existingContentSnapshot = await get(existingContentRef); // Fetch existing content before updating
   //     const existingContent = existingContentSnapshot.val();
-
 
   //     const updatedContent = {
   //       title: formData.title,
@@ -261,7 +317,6 @@ const ContentManagement = () => {
   //     );
   //       })
 
-        
   //       .catch((error) => {
   //         console.error("Error updating content: ", error);
   //       });
@@ -295,8 +350,10 @@ const ContentManagement = () => {
   //   }
   // };
 
-  const handleSubmit = async  () => {
+  const handleSubmit = async (event) => {
     // Validate form data
+
+    event.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -320,14 +377,13 @@ const ContentManagement = () => {
         userName: currentUser.displayName, // Add current user name
         userEmail: currentUser.email, // Add current user email
         timestamp: Date.now(), // Use current timestamp for updated records
+        isBroadcasted: "Yes",
       };
-
-    
 
       // Update the content in Firebase using set()
       const contentRef = ref(getDatabase(), `Contents/${editingId}`);
       set(contentRef, updatedContent) // Use set instead of push
-        .then(async() => {
+        .then(async () => {
           setShowAlert(true); // Show success alert
           setIsFormOpen(false); // Close the form
           setEditingId(null); // Reset editingId
@@ -335,7 +391,8 @@ const ContentManagement = () => {
             currentUser.uid,
             `Edited content from: title ${existingContent.title}, message: ${existingContent.message}, audience: ${existingContent.audience}, contentType: ${existingContent.contentType}, channel: ${existingContent.channel} TO title ${updatedContent.title}, message: ${updatedContent.message}, audience: ${updatedContent.audience}, contentType: ${updatedContent.contentType}, channel: ${updatedContent.channel}`,
             "Content Management Page"
-          );        })
+          );
+        })
         .catch((error) => {
           console.error("Error updating content: ", error);
         });
@@ -350,6 +407,7 @@ const ContentManagement = () => {
         userName: currentUser.displayName, // Add current user name
         userEmail: currentUser.email, // Add current user email
         timestamp: Date.now(), // Use current timestamp for new records
+        isBroadcasted: "Yes",
       };
 
       await logAdminActivity(
@@ -407,26 +465,27 @@ const ContentManagement = () => {
     const logRef = ref(db, `ActivityLogs/${adminId}/${new Date().getTime()}`); // Unique key using timestamp under adminId
 
     try {
-        await set(logRef, {
-            action: action,
-            page: page,
-            timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
-        });
-        console.log("Activity logged successfully");
+      await set(logRef, {
+        action: action,
+        page: page,
+        timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
+      });
+      console.log("Activity logged successfully");
     } catch (error) {
-        console.error("Error logging admin activity:", error);
+      console.error("Error logging admin activity:", error);
     }
-};
+  };
 
   return (
     <>
-     {showAccessMessage ? (
+      {showAccessMessage ? (
         // Show Access Denied message if the user doesn't have access
         <div className="flex items-center justify-center h-screen bg-gray-200">
           <div className="bg-red-100 border border-red-400 text-red-700 p-6 rounded-lg shadow-lg max-w-md w-full">
             <strong className="font-bold text-lg">Access Denied!</strong>
             <p className="block">
-              You do not have access to manage content. Contact your SuperAdmin if you need access.
+              You do not have access to manage content. Contact your SuperAdmin
+              if you need access.
             </p>
             <div className="mt-4">
               <button
@@ -439,203 +498,213 @@ const ContentManagement = () => {
           </div>
         </div>
       ) : (
-      <div className="flex h-screen bg-white font-nunito">
-        {/* Sidebar */}
-        <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
-          <img
-            className="w-[200px] h-[200px] mx-auto mb-10"
-            src={adminImage}
-            alt="Company Logo"
-          />
-          <nav className="space-y-6">
-            {navLinks.map(({ link, icon, label }) => (
-              <a
-                key={link}
-                href={link}
-                onClick={() => setActiveLink(link)}
-                className={`flex items-center text-xl transition ${
-                  activeLink === link
-                    ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3"
-                    : "text-white hover:text-[#09d1e3]"
-                }`}
-                style={{ textDecoration: "none" }}
-              >
-                <img
-                  className="w-8 h-8 mr-3 transition"
-                  src={activeLink === link ? activeContent : icon}
-                  alt={`${label} Icon`}
-                />
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="mt-auto">
-            <button
-              onClick={handleLogout}
-              className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-          <h1 className="text-2xl font-bold mb-2 text-[#09d1e3]">
-            Content Management
-          </h1>
-          <p className="text-gray-700 mb-4">
-            Create and manage content for your audience.
-          </p>
-
-          {/* Create Content Card */}
-          <div
-            className="bg-[#f1f9ff] shadow-md rounded-lg p-4 mb-6 cursor-pointer hover:shadow-lg transition"
-            onClick={() => setIsFormOpen(!isFormOpen)}
-          >
-            <h2 className="text-xl font-semibold text-[#09d1e3]">
-              Create Content
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Click here to create a new announcement, update, or reminder for
-              your audience.
-            </p>
-          </div>
-
-          {isFormOpen && (
-            <form
-              className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-md mx-auto"
-              onSubmit={handleSubmit}
-            >
-              {/* Form Fields */}
-              <label className="block mb-2">
-                Title
-                <input
-                  type="text"
-                  className="block w-full mt-1 py-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  required
-                />
-              </label>
-
-              <label className="block mb-2">
-                Message
-                <textarea
-                  className="block w-full h-32 mt-1 py-2 border border-gray-300 rounded resize-none focus:border-[#09d1e3] focus:outline-none"
-                  value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
-                  required
-                />
-              </label>
-
-              <label className="block mb-2">
-                Audience
-                <select
-                  className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
-                  value={formData.audience}
-                  onChange={(e) =>
-                    setFormData({ ...formData, audience: e.target.value })
-                  }
+        <div className="flex h-screen bg-white font-nunito">
+          {/* Sidebar */}
+          <div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+            <img
+              className="w-[200px] h-[200px] mx-auto mb-10"
+              src={adminImage}
+              alt="Company Logo"
+            />
+            <nav className="space-y-6">
+              {navLinks.map(({ link, icon, label }) => (
+                <a
+                  key={link}
+                  href={link}
+                  onClick={() => setActiveLink(link)}
+                  className={`flex items-center text-xl transition ${
+                    activeLink === link
+                      ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3"
+                      : "text-white hover:text-[#09d1e3]"
+                  }`}
+                  style={{ textDecoration: "none" }}
                 >
-                  <option value="users">Users</option>
-                  <option value="admins">Admins</option>
-                  <option value="both">Both</option>
-                </select>
-              </label>
-
-              <label className="block mb-2">
-                Content Type
-                <select
-                  className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
-                  value={formData.contentType}
-                  onChange={(e) =>
-                    setFormData({ ...formData, contentType: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Select Type</option>
-                  <option value="announcement">Announcement</option>
-                  <option value="update">Update</option>
-                  <option value="reminder">Reminder</option>
-                </select>
-              </label>
-
-              <label className="block mb-2">
-                Channel
-                <select
-                  className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
-                  value={formData.channel}
-                  onChange={(e) =>
-                    setFormData({ ...formData, channel: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Select Channel</option>
-                  <option value="email">Email</option>
-                  <option value="in-app">In-app</option>
-                </select>
-              </label>
-
+                  <img
+                    className="w-8 h-8 mr-3 transition"
+                    src={activeLink === link ? activeContent : icon}
+                    alt={`${label} Icon`}
+                  />
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <div className="mt-auto">
               <button
-                type="submit"
-                className="w-full h-12 bg-blue-600 text-white font-semibold rounded-lg mt-4 hover:bg-blue-500 transition"
+                onClick={handleLogout}
+                className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
               >
-                Submit
+                Logout
               </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData({
-                    title: "",
-                    message: "",
-                    audience: "users",
-                    contentType: "",
-                    channel: "",
-                  }); // Reset form data to initial state
-                  setIsFormOpen(false); // Close the form
-                }}
-                className="w-full h-12 bg-gray-400 text-white font-semibold rounded-lg mt-2 hover:bg-gray-300 transition"
-              >
-                Cancel
-              </button>
-            </form>
-          )}
-
-          {/* Alert Dialog */}
-          {showAlert && (
-            <div className="w-full max-w-md mx-auto">
-              <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-                <h2 className="text-xl font-semibold text-green-600">
-                  Success!
-                </h2>
-                <p className="text-gray-700">
-                  Your content has been successfully saved.
-                </p>
-                <button
-                  onClick={() => setShowAlert(false)}
-                  className="mt-4 w-full h-10 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
-                >
-                  Close
-                </button>
-              </div>
             </div>
-          )}
+          </div>
 
-          {/* Display Saved Content */}
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold text-[#09d1e3] mb-4">
-              Saved Content
-            </h2>
-            <div className="grid grid-cols-1 gap-4">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <HeaderCards
+              title="Content Management"
+              description="Create and manage content for your audience."
+              animationData={animationData}
+            />
+
+            {/* Floating Button for Create Content */}
+            <button
+              onClick={() => setIsFormOpen(true)}
+              className="fixed bottom-8 right-8 bg-[#09d1e3] text-white rounded-full w-16 h-16 shadow-lg flex items-center justify-center hover:bg-[#0bafc1] transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+
+            {/* Only Render the Form as a Modal */}
+            {isFormOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <form
+                  className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-md mx-auto"
+                  onSubmit={handleSubmit}
+                >
+                  {/* Form Fields */}
+                  <label className="block mb-2">
+                    Title
+                    <input
+                      type="text"
+                      className="block w-full mt-1 py-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      required
+                    />
+                  </label>
+
+                  <label className="block mb-2">
+                    Message
+                    <textarea
+                      className="block w-full h-32 mt-1 py-2 border border-gray-300 rounded resize-none focus:border-[#09d1e3] focus:outline-none"
+                      value={formData.message}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
+                      required
+                    />
+                  </label>
+
+                  <label className="block mb-2">
+                    Audience
+                    <select
+                      className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
+                      value={formData.audience}
+                      onChange={(e) =>
+                        setFormData({ ...formData, audience: e.target.value })
+                      }
+                    >
+                      <option value="users">Users</option>
+                      <option value="admins">Admins</option>
+                      <option value="both">Both</option>
+                    </select>
+                  </label>
+
+                  <label className="block mb-2">
+                    Content Type
+                    <select
+                      className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
+                      value={formData.contentType}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          contentType: e.target.value,
+                        })
+                      }
+                      required
+                    >
+                      <option value="">Select Type</option>
+                      <option value="announcement">Announcement</option>
+                      <option value="update">Update</option>
+                    </select>
+                  </label>
+
+                  <label className="block mb-2">
+                    Channel
+                    <select
+                      className="block w-full mt-1 p-2 border border-gray-300 rounded focus:border-[#09d1e3] focus:outline-none"
+                      value={formData.channel}
+                      onChange={(e) =>
+                        setFormData({ ...formData, channel: e.target.value })
+                      }
+                      required
+                    >
+                      <option value="">Select Channel</option>
+                      <option value="email">Email</option>
+                      <option value="in-app">In-app</option>
+                    </select>
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="w-full h-12 bg-blue-600 text-white font-semibold rounded-lg mt-4 hover:bg-blue-500 transition"
+                  >
+                    Submit
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        title: "",
+                        message: "",
+                        audience: "users",
+                        contentType: "",
+                        channel: "",
+                      }); // Reset form data to initial state
+                      setIsFormOpen(false); // Close the form
+                    }}
+                    className="w-full h-12 bg-gray-400 text-white font-semibold rounded-lg mt-2 hover:bg-gray-300 transition"
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Alert Dialog with Overlay */}
+            {showAlert && (
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                  <h2 className="text-xl font-semibold text-green-600">
+                    Success!
+                  </h2>
+                  <p className="text-gray-700">
+                    The content has been successfully broadcasted.
+                  </p>
+
+                  <button
+                    onClick={() => setShowAlert(false)}
+                    className="mt-4 w-full h-10 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Display Saved Content */}
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-[#09d1e3] mb-4">
+                Saved Content
+              </h2>
+
               {contentList.length === 0 ? (
-                <div className="bg-blue-100 shadow-md rounded-lg p-4 text-center">
-                  <h3 className="font-semibold text-lg">
+                <div className="bg-red-100 shadow-md rounded-lg p-4 text-center">
+                  <h3 className="font-semibold text-lg text-red-500">
                     No Contents Available
                   </h3>
                   <p className="text-sm text-gray-500">
@@ -644,76 +713,73 @@ const ContentManagement = () => {
                   </p>
                 </div>
               ) : (
-                contentList
-                  .slice(0, showAll ? contentList.length : 2)
-                  .map((content) => (
-                    <div
-                      key={content.timestamp}
-                      className="bg-yellow-100 shadow-md rounded-lg p-4 hover:bg-green-100 transition-colors duration-200 flex justify-between items-center"
-                    >
-                      <div>
-                        <h3 className="font-semibold text-xl">
-                          {content.title}
-                        </h3>
-                        <p className="text-sm">{content.message}</p>
-                        <div className="flex items-center text-sm text-gray-500 mt-2">
-                          <span className="material-icons text-base mr-1">
-                            person
-                          </span>
-                          <p>
-                            Posted by: {content.userName} ({content.userEmail})
-                          </p>
-                          <span className="material-icons text-base mx-2">
-                            access_time
-                          </span>
-                          <p>
-                            Timestamp:{" "}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border border-white-300">
+                    <thead className="bg-[#09d1e3] text-white">
+                      <tr>
+                        <th className="py-2 px-4 border-b">Title</th>
+                        <th className="py-2 px-4 border-b">Posted by</th>
+                        <th className="py-2 px-4 border-b">Timestamp</th>
+                        <th className="py-2 px-4 border-b">Is Broadcasted</th>
+                        <th className="py-2 px-4 border-b">Channel</th>
+                        <th className="py-2 px-4 border-b">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contentList.map((content) => (
+                        <tr
+                          key={content.timestamp}
+                          className="hover:bg-white-100 transition-colors duration-200"
+                        >
+                          <td className="py-2 px-4 border-b">
+                            {content.title}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {content.userName}
+                          </td>
+                          <td className="py-2 px-4 border-b">
                             {new Date(content.timestamp).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                      {/* Icons Container */}
-                      <div className="flex space-x-2">
-                        {/* Edit Icon */}
-                        <img
-                          src={editIcon}
-                          alt="Edit"
-                          className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
-                          onClick={() => handleEditClick(content)} // Call the handleEditClick function
-                        />
-
-                        {/* Delete Icon */}
-                        <img
-                          src={deleteIcon}
-                          alt="Delete"
-                          className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
-                          onClick={() => handleDeleteClick(content.id)} // Pass content ID for deletion
-                        />
-
-                        {/* Send Icon */}
-                        <img
-                          src={sendIcon}
-                          alt="Send"
-                          className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
-                          onClick={() => handleSendClick(content)} // Trigger the send action
-                        />
-                      </div>
-                    </div>
-                  ))
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {content.isBroadcasted}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {content.channel}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            <div className="flex space-x-2">
+                              <img
+                                src={editIcon}
+                                alt="Edit"
+                                className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
+                                onClick={() => handleEditClick(content)} // Call the handleEditClick function
+                              />
+                              <img
+                                src={deleteIcon}
+                                alt="Delete"
+                                className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
+                                onClick={() => handleDeleteClick(content.id)} // Pass content ID for deletion
+                              />
+                              <img
+                                src={sendIcon}
+                                alt="Send"
+                                className="w-6 h-6 cursor-pointer hover:scale-110 transition-transform"
+                                onClick={() => handleSendClick(content)} // Open the dialog
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
 
-            {contentList.length > 2 && (
-              <button
-                onClick={() => setShowAll(!showAll)}
-                className="mt-4 w-full h-10 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
-              >
-                {showAll ? "Show Less" : "See All"}
-              </button>
-            )}
+           
           </div>
         </div>
-      </div> )}
+      )}
     </>
   );
 };

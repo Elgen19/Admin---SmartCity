@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import 'tailwindcss/tailwind.css';
+import animationData from '../assets/lottifies/security_logs.json';
+import HeaderCards from '../components/HeaderCards.js';
 
 const ActivityLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -121,18 +123,20 @@ const ActivityLogs = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 font-nunito">
-      <h1 className="text-3xl font-bold mb-2">Activity Logs</h1>
-      <p className="text-gray-600 mb-6">
-        This page displays the activity logs of admins, tracking actions they have taken within the application. You can see the exact action performed, the page it occurred on, and the time it happened.
-      </p>
+    <div className="flex-1 flex flex-col overflow-y-auto font-nunito">
+      <HeaderCards
+        title="Activity Logs"
+        description="This page displays the activity logs of admins, tracking actions they have taken within the application. You can see the exact action performed, the page it occurred on, and the time it happened."
+        animationData={animationData}
+      />
+     
 
       {/* Filter Card Section */}
-      <div className="bg-yellow-100 shadow-md rounded-lg p-4 mb-6 cursor-pointer" onClick={() => setFiltersVisible(!filtersVisible)}>
+      <div className="bg-yellow-100 shadow-md rounded-lg p-4 mx-3 mt-3 mb-6 cursor-pointer" onClick={() => setFiltersVisible(!filtersVisible)}>
         <h4 className="text-md font-semibold">Filter Logs</h4>
         <p className="text-sm">Click the card to expand the list of filters available for the activity logs.</p>
         {filtersVisible && (
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-4 flex flex-col gap-4 ">
             {/* Admin Filter */}
             <div>
               <label className="block mb-2 text-gray-700">Filter by Admin</label>
@@ -237,7 +241,7 @@ const ActivityLogs = () => {
           <p className="mt-4">Loading...</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto px-3">
           {filteredLogs.length > 0 ? (
             <table className="min-w-full table-auto bg-white border border-red-300 rounded-lg shadow-md">
               <thead>

@@ -4,6 +4,7 @@ const fs = require('fs');
 const firebase = require('../config/firebase'); // Import firebase setup
 const db = firebase.database();
 const transporter = require('../config/mailConfig'); // Import the transporter from mailConfig
+const { timeStamp } = require('console');
 
 // Send invite to a new admin
 exports.sendInvite = async (req, res) => {
@@ -91,3 +92,5 @@ exports.verifyInvite = async (req, res) => {
     res.status(500).json({ message: 'Error verifying invitation token' });
   }
 };
+
+

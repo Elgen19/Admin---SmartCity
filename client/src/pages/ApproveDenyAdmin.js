@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, get, update, remove ,set } from "firebase/database";
+import { getDatabase, ref, get, update, remove, set } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/lottifies/loading.json"; // Make sure to update the path to your loading.json file
+import animationData from "../assets/lottifies/approved.json";
+import HeaderCards from "../components/HeaderCards.js";
 
 const ApproveDenyAdmin = () => {
   const [admins, setAdmins] = useState([]);
@@ -31,8 +33,6 @@ const ApproveDenyAdmin = () => {
 
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, [navigate]);
-
-
 
   const checkUserAccess = async (uid) => {
     const userRef = ref(db, `admins/${uid}`); // Fetch the user's data based on uid
@@ -110,9 +110,12 @@ const ApproveDenyAdmin = () => {
 
       const user = auth.currentUser;
       if (user) {
-        await logAdminActivity(user.uid, `Approved admin registration for ${adminEmail}`, "Approve Deny Admin Page");
+        await logAdminActivity(
+          user.uid,
+          `Approved admin registration for ${adminEmail}`,
+          "Approve Deny Admin Page"
+        );
       }
-
     } catch (err) {
       toast.error("Error approving admin");
     } finally {
@@ -136,7 +139,11 @@ const ApproveDenyAdmin = () => {
 
       const user = auth.currentUser;
       if (user) {
-        await logAdminActivity(user.uid, `Denied admin registration for ${adminEmail}`, "Approve Deny Admin Page");
+        await logAdminActivity(
+          user.uid,
+          `Denied admin registration for ${adminEmail}`,
+          "Approve Deny Admin Page"
+        );
       }
 
       fetchUnapprovedAdmins(); // Refresh the list
@@ -202,26 +209,27 @@ const ApproveDenyAdmin = () => {
     const logRef = ref(db, `ActivityLogs/${adminId}/${new Date().getTime()}`); // Unique key using timestamp under adminId
 
     try {
-        await set(logRef, {
-            action: action,
-            page: page,
-            timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
-        });
-        console.log("Activity logged successfully");
+      await set(logRef, {
+        action: action,
+        page: page,
+        timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
+      });
+      console.log("Activity logged successfully");
     } catch (error) {
-        console.error("Error logging admin activity:", error);
+      console.error("Error logging admin activity:", error);
     }
-};
+  };
 
   return (
     <>
-     {showAccessMessage ? (
+      {showAccessMessage ? (
         // Show Access Denied message if the user doesn't have access
         <div className="flex items-center justify-center h-screen bg-gray-200">
           <div className="bg-red-100 border border-red-400 text-red-700 p-6 rounded-lg shadow-lg max-w-md w-full">
             <strong className="font-bold text-lg">Access Denied!</strong>
             <p className="block">
-              You do not have access to approve or deny incoming admins. Contact your SuperAdmin if you need access.
+              You do not have access to approve or deny incoming admins. Contact
+              your SuperAdmin if you need access.
             </p>
             <div className="mt-4">
               <button
@@ -234,63 +242,64 @@ const ApproveDenyAdmin = () => {
           </div>
         </div>
       ) : (
-      <div
-        className="relative p-8"
-        style={{ fontFamily: "Nunito, sans-serif" }}
-      >
-        <h1 className="text-[#09d1e3] text-3xl font-bold mb-6">
-          Admin Approval Requests
-          <span className="text-sm text-gray-600 block mt-1">
-            Review and manage admin requests below.
-          </span>
-        </h1>
-        {admins.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6">
-            {admins.map((admin) => (
-              <div
-                key={admin.id}
-                className="bg-blue-100 shadow-md p-4 rounded-lg flex justify-between items-center transition duration-300 ease-in-out hover:shadow-lg"
-              >
-                <div>
-                  <p className=" text-lg font-semibold">{admin.name}</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {admin.email}
-                  </p>{" "}
-                  {/* Added mt-1 to reduce spacing */}
-                  <p className="text-xs text-gray-400">
-                    {formatTimestamp(admin.createdAt)}
-                  </p>
-                </div>
+        <div
+          className="w-full  flex-col overflow-y-auto"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          <HeaderCards
+            title="Approve or Deny Admin Registration"
+            description="Manage the approval process for new admin registrations. Review requests and decide whether to approve or deny access to the admin panel."
+            animationData={animationData}
+          />
 
-                <div className="flex space-x-4">
-                  <button
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
-                    onClick={() =>
-                      handleApprove(admin.id, admin.email, admin.name)
-                    }
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
-                    onClick={() =>
-                      handleDeny(admin.id, admin.email, admin.name)
-                    }
-                  >
-                    Deny
-                  </button>
+          {admins.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 mt-5 px-5 py-3">
+              {admins.map((admin) => (
+                <div
+                  key={admin.id}
+                  className="bg-blue-100 shadow-md p-4 rounded-lg flex justify-between items-center transition duration-300 ease-in-out hover:shadow-lg"
+                >
+                  <div>
+                    <p className=" text-lg font-semibold">{admin.name}</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {admin.email}
+                    </p>{" "}
+                    {/* Added mt-1 to reduce spacing */}
+                    <p className="text-xs text-gray-400">
+                      {formatTimestamp(admin.createdAt)}
+                    </p>
+                  </div>
+
+                  <div className="flex space-x-4">
+                    <button
+                      className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
+                      onClick={() =>
+                        handleApprove(admin.id, admin.email, admin.name)
+                      }
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
+                      onClick={() =>
+                        handleDeny(admin.id, admin.email, admin.name)
+                      }
+                    >
+                      Deny
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-red-100 shadow-md rounded-lg p-6  flex items-center justify-center mt-6">
-            <p className="text-gray-600 text-lg font-semibold">
-              No admin approval requests at the moment.
-            </p>
-          </div>
-        )}
-      </div> )}
+              ))}
+            </div>
+          ) : (
+            <div className="bg-red-100 shadow-md rounded-lg p-6  flex items-center justify-center mt-6">
+              <p className="text-gray-600 text-lg font-semibold">
+                No admin approval requests at the moment.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

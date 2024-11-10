@@ -6,4 +6,5 @@ const router = express.Router();
 // Route to send content via email
 router.post('/send-content', sendContentToAudience);
 
+
 module.exports = router;

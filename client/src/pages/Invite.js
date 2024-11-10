@@ -3,6 +3,8 @@ import axios from "axios";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, get, set } from "firebase/database";
 import { useNavigate } from "react-router-dom";
+import Lottie from 'lottie-react';
+import animationData from "../assets/lottifies/promote_admin.json"; // Update with the correct path to your Lottie animation
 
 function Invite() {
   const [email, setEmail] = useState("");
@@ -71,12 +73,12 @@ function Invite() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-        // Log the admin activity after sending the invite
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (user) {
-          await logAdminActivity(user.uid, `Sent invite for new admin to ${email}`, "Invite Admin Page");
-        }
+      // Log the admin activity after sending the invite
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        await logAdminActivity(user.uid, `Sent invite for new admin to ${email}`, "Invite Admin Page");
+      }
 
       setStatusMessage(response.data.message); // Set success message
       setStatusType("success"); // Set status type to success
@@ -104,17 +106,16 @@ function Invite() {
     const logRef = ref(db, `ActivityLogs/${adminId}/${new Date().getTime()}`); // Unique key using timestamp under adminId
 
     try {
-        await set(logRef, {
-            action: action,
-            page: page,
-            timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
-        });
-        console.log("Activity logged successfully");
+      await set(logRef, {
+        action: action,
+        page: page,
+        timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
+      });
+      console.log("Activity logged successfully");
     } catch (error) {
-        console.error("Error logging admin activity:", error);
+      console.error("Error logging admin activity:", error);
     }
-};
-
+  };
 
   return (
     <>
@@ -138,18 +139,14 @@ function Invite() {
         </div>
       ) : (
         // Show the Invite Admin form if the user has access
-        <div
-          className="flex justify-center items-center h-screen bg-cover bg-center"
-          style={{
-            backgroundImage: `url('http://localhost:3000/static/media/Rectangle%2018.1598e9d2ad9c39c2cb6f.png')`,
-            height: "100vh",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.9,
-          }}
-        >
-          <div className="bg-white shadow-md rounded-lg p-8 w-96 flex flex-col items-center font-nunito relative z-10">
-            <h3 className="text-xl font-semibold mb-4">Invite New Admin</h3>
+        <div className="relative flex justify-center items-center h-screen">
+          {/* Lottie Animation as background */}
+          <div className="absolute inset-0 z-0">
+            <Lottie animationData={animationData} loop={true} autoplay={true} />
+          </div>
+
+          <div className="bg-white shadow-md rounded-lg p-8 w-96 flex flex-col items-center font-nunito relative z-10 text-[#09d1e3] ">
+            <h3 className="text-xl font-semibold mb-4 text-[24px]">Invite New Admin</h3>
             <p className="text-gray-600 mb-4">
               Please enter the email address of the admin you want to invite.
             </p>
@@ -158,7 +155,7 @@ function Invite() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
-              className="border border-gray-300 rounded-md p-3 mb-4 w-full text-lg"
+              className="border border-gray-300 rounded-md pt-3 pb-3  mb-4 w-full text-lg"
             />
             <button
               onClick={sendInvite}
@@ -186,12 +183,10 @@ function Invite() {
               </p>
             )}
           </div>
-          <div className="absolute inset-0 bg-black opacity-30 z-0"></div>
         </div>
       )}
     </>
   );
-  
 }
 
 export default Invite;

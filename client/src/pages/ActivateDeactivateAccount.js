@@ -6,8 +6,9 @@ import axios from "axios"; // Import Axios
 import CustomAlert from "../components/CustomAlert";
 import CustomConfirmAlert from "../components/CustomConfirmAlert"; // Import the CustomConfirmAlert component
 import UserInfoModal from "../components/UserInfoModal"; // Import the new modal component
-import AdminInfoModal from '../components/AdminInfoModal'; // Adjust the path as necessary
-
+import AdminInfoModal from "../components/AdminInfoModal"; // Adjust the path as necessary
+import animationData from "../assets/lottifies/promote_admin.json";
+import HeaderCards from "../components/HeaderCards.js";
 
 const ActivateDeactivateAccount = () => {
   const [users, setUsers] = useState([]);
@@ -32,8 +33,6 @@ const ActivateDeactivateAccount = () => {
   const auth = getAuth();
 
   useEffect(() => {
-    
-
     // Check authentication state
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -78,10 +77,9 @@ const ActivateDeactivateAccount = () => {
   // Function to close the modal
   const closeInfoModal = () => {
     setIsModalOpen(false);
-    setIsAdminModalOpen(false)
+    setIsAdminModalOpen(false);
     setSelectedUser(null);
     setSelectedAdmin(null);
-
   };
 
   const handleAdminClick = (admin) => {
@@ -161,17 +159,18 @@ const ActivateDeactivateAccount = () => {
         visible: true,
       });
 
-
-  
-     // Log admin activity
-     const user = auth.currentUser;
-     if (user) {
-       const action = isActive
-         ? `Deactivated the ${accountType} account of ${email}`
-         : `Activated the ${accountType} account of ${email}`;
-       await logAdminActivity(user.uid, action, "Activate Deactivate Account Page");
-     }
-
+      // Log admin activity
+      const user = auth.currentUser;
+      if (user) {
+        const action = isActive
+          ? `Deactivated the ${accountType} account of ${email}`
+          : `Activated the ${accountType} account of ${email}`;
+        await logAdminActivity(
+          user.uid,
+          action,
+          "Activate Deactivate Account Page"
+        );
+      }
     } catch (error) {
       setAlert({
         message: "Error updating status: " + error.message,
@@ -225,16 +224,16 @@ const ActivateDeactivateAccount = () => {
     const logRef = ref(db, `ActivityLogs/${adminId}/${new Date().getTime()}`); // Unique key using timestamp under adminId
 
     try {
-        await set(logRef, {
-            action: action,
-            page: page,
-            timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
-        });
-        console.log("Activity logged successfully");
+      await set(logRef, {
+        action: action,
+        page: page,
+        timestamp: new Date().toISOString(), // Optional if you want to store a separate timestamp
+      });
+      console.log("Activity logged successfully");
     } catch (error) {
-        console.error("Error logging admin activity:", error);
+      console.error("Error logging admin activity:", error);
     }
-};
+  };
 
   return (
     <>
@@ -244,10 +243,10 @@ const ActivateDeactivateAccount = () => {
         user={selectedUser}
       />
 
-<AdminInfoModal 
-        isOpen={isAdminModalOpen} 
-        onClose={closeInfoModal} 
-        admin={selectedAdmin} 
+      <AdminInfoModal
+        isOpen={isAdminModalOpen}
+        onClose={closeInfoModal}
+        admin={selectedAdmin}
       />
 
       {showAccessMessage ? (
@@ -270,7 +269,7 @@ const ActivateDeactivateAccount = () => {
           </div>
         </div>
       ) : (
-        <div className="container mx-auto p-6 font-nunito">
+        <div className="flex-1 flex flex-col overflow-y-auto font-nunito">
           {/* Custom Alert */}
           {alert.visible && (
             <CustomAlert
@@ -289,15 +288,11 @@ const ActivateDeactivateAccount = () => {
             />
           )}
 
-          <div className="text-left">
-            <h1 className="text-3xl font-bold mb-2 text-[#09d1e3] font-nunito">
-              Activate/Deactivate Accounts
-            </h1>
-            <p className="text-gray-600 mb-6 font-nunito">
-              Manage the activation and deactivation of user and admin accounts
-              effectively.
-            </p>
-          </div>
+          <HeaderCards
+            title="Activate/Deactivate Accounts"
+            description=" Manage the activation and deactivation of user and admin accounts effectively."
+            animationData={animationData}
+          />
 
           {/* Search Input */}
           <input
@@ -305,12 +300,12 @@ const ActivateDeactivateAccount = () => {
             placeholder="Search Users or Admins"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border p-2 mb-4 rounded w-full"
+            className="border p-1 rounded w-128 py-5 m-5"
           />
 
           {/* Users Table */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6">Users</h2>
+          <div className="mb-12 px-5">
+            <h2 className="text-2xl font-semibold mb-6 text-[#09d1e3]">Users</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto bg-white shadow-md rounded-lg">
                 <thead className="bg-yellow-100">
@@ -333,12 +328,14 @@ const ActivateDeactivateAccount = () => {
                   {users
                     .filter(
                       (user) =>
-                        user.fullName
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                        user.email
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
+                        (user.fullName &&
+                          user.fullName
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())) ||
+                        (user.email &&
+                          user.email
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()))
                     )
                     .map((user) => (
                       <tr key={user.id} className="border-t">
@@ -356,19 +353,25 @@ const ActivateDeactivateAccount = () => {
                           )}
                         </td>
                         <td className="py-4 px-6">
-                        <button
-                          className={`px-4 py-2 rounded text-white transition-colors duration-200 ease-in-out ${user.active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
-                          onClick={() => openConfirmAlert(user.id, user.active, 'Users')}
-                        >
-                          {user.active ? 'Deactivate' : 'Activate'}
-                        </button>
-                        <button
-                          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                          onClick={() => openUserInfoModal(user)} // Open modal on button click
-                        >
-                          View
-                        </button>
-                      </td>
+                          <button
+                            className={`px-4 py-2 rounded text-white transition-colors duration-200 ease-in-out ${
+                              user.active
+                                ? "bg-red-500 hover:bg-red-600"
+                                : "bg-green-500 hover:bg-green-600"
+                            }`}
+                            onClick={() =>
+                              openConfirmAlert(user.id, user.active, "Users")
+                            }
+                          >
+                            {user.active ? "Deactivate" : "Activate"}
+                          </button>
+                          <button
+                            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() => openUserInfoModal(user)} // Open modal on button click
+                          >
+                            View
+                          </button>
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -377,8 +380,8 @@ const ActivateDeactivateAccount = () => {
           </div>
 
           {/* Admins Table */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Admins</h2>
+          <div className="px-5">
+            <h2 className="text-2xl font-semibold mb-6 text-[#09d1e3]">Admins</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto bg-white shadow-md rounded-lg">
                 <thead className="bg-blue-100">
@@ -438,11 +441,11 @@ const ActivateDeactivateAccount = () => {
                           </button>
 
                           <button
-                          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                          onClick={() => handleAdminClick(admin)} // Open modal on button click
-                        >
-                          View
-                        </button>
+                            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() => handleAdminClick(admin)} // Open modal on button click
+                          >
+                            View
+                          </button>
                         </td>
                       </tr>
                     ))}

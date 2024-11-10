@@ -15,11 +15,17 @@ const analyzeFeedbackBasedOnTone = async (req, res) => {
         const snapshot = await feedbackRef.once("value");
         const feedbackComments = snapshot.val();
 
+        // Safeguard: Check if the Feedback node exists or contains data
+        if (!feedbackComments) {
+            return res.status(404).json({ error: "No feedback comments available. The Feedback node is empty or does not exist." });
+        }
+
         const commentsArray = Object.values(feedbackComments || {});
 
         // Filter comments based on the specified tone
         const filteredComments = commentsArray.filter(commentObj => commentObj.tone === tone);
 
+        // Safeguard: Check if there are any comments matching the specified tone
         if (filteredComments.length === 0) {
             return res.status(404).json({ error: `No feedback comments available for tone: ${tone}.` });
         }
@@ -30,10 +36,10 @@ const analyzeFeedbackBasedOnTone = async (req, res) => {
         const result = await model.generateContent(prompt);
 
         // Clean the response text by removing any ** or ## characters
-        let  cleanedAnalysis = result.response.text().replace(/\*\*|##/g, "");
+        let cleanedAnalysis = result.response.text().replace(/\*\*|##/g, "");
 
-         // Remove the "Summary:" prefix if it exists
-         cleanedAnalysis = cleanedAnalysis.replace(/^Summary:\s*/i, "");
+        // Remove the "Summary:" prefix if it exists
+        cleanedAnalysis = cleanedAnalysis.replace(/^Summary:\s*/i, "");
 
         return res.json({ analysis: cleanedAnalysis });
     } catch (error) {
@@ -41,6 +47,5 @@ const analyzeFeedbackBasedOnTone = async (req, res) => {
         return res.status(500).json({ error: "Error fetching analysis." });
     }
 };
-
 
 module.exports = { analyzeFeedbackBasedOnTone };

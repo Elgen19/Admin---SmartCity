@@ -158,7 +158,7 @@ const Profile = () => {
       ) : (
         <>
           {/* Sidebar */}
-          <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+          <div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
             <img
               className="w-[200px] h-[200px] mx-auto mb-10"
               src={adminImage} // Updated with your image path

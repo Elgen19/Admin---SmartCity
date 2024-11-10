@@ -3,6 +3,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, get, child, onValue } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 import {
   BarChart,
@@ -24,6 +26,11 @@ import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import notificationBell from "../assets/images/notification-bell.png";
 import activeHome from "../assets/images/active_home.png"
+import Lottie from 'lottie-react'
+import userAnimation from '../assets/lottifies/users.json'; // Replace with actual path
+import feedbackAnimation from '../assets/lottifies/feeback.json'; // Replace with actual path
+import contentUpdateAnimation from '../assets/lottifies/announcement.json'; // Replace with actual path
+
 
 const Home = () => {
   
@@ -40,9 +47,45 @@ const Home = () => {
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("1 Minute");
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+  const [adminContents, setAdminContents] = useState([]);
+  const [selectedContent, setSelectedContent] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const database = getDatabase()
+
+    // Fetch contents targeted to admins from Firebase
+  useEffect(() => {
+    const contentsRef = ref(database, "Contents");
+
+    onValue(contentsRef, (snapshot) => {
+      const contentsData = snapshot.val();
+      const filteredContents = [];
+
+      for (const contentId in contentsData) {
+        const content = contentsData[contentId];
+        if (content.audience === "admins") {
+          filteredContents.push({ id: contentId, ...content });
+        }
+      }
+
+      setAdminContents(filteredContents);
+    });
+  }, [database]);
+
+  // Open dialog with selected content details
+  const handleViewClick = (content) => {
+    setSelectedContent(content);
+    setIsDialogOpen(true);
+  };
+
+  // Close dialog
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedContent(null);
+  };
+
 
   useEffect(() => {
     const auth = getAuth();
@@ -239,14 +282,17 @@ const Home = () => {
   useEffect(() => {
     const hours = new Date().getHours();
     let greetingMessage = "Good morning";
-
+  
     if (hours >= 12 && hours < 18) {
       greetingMessage = "Good afternoon";
     } else if (hours >= 18 || hours < 5) {
       greetingMessage = "Good evening";
     }
-
-    setGreeting(`${greetingMessage}, ${adminName.split(" ")[0]}!`);
+  
+    setGreeting({
+      message: greetingMessage,
+      name: adminName.split(" ")[0], // Get the first name
+    });
   }, [adminName]);
 
   const navLinks = [
@@ -275,7 +321,7 @@ const Home = () => {
   return (
     <div className="flex h-screen bg-white font-nunito">
      {/* Sidebar */}
-<div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+<div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
     <img
         className="w-[200px] h-[200px] mx-auto mb-10"
         src={adminImage} // Updated with your image path
@@ -317,47 +363,63 @@ const Home = () => {
       <div className="flex-1 flex flex-col p-6 overflow-y-auto">
         {/* Greeting and Notification Row */}
         <div className="flex items-center justify-between w-full mb-6">
-          <label className="text-2xl font-bold text-[#141d70]">
-            {greeting}
-          </label>
-          <button className="ml-4 bg-transparent p-0 border-none"
-          onClick={handleNotificationClick} 
-          >
-            <img
-              src={notificationBell}
-              alt="Notification Bell"
-              className="w-8 h-8"
-            />
-          </button>
-        </div>
+    <label className="text-[28px] font-bold text-[#141d70]">
+      <span className="font-extrabold text-[#09d1e3]">{greeting.message},</span> <span className="font-normal">{greeting.name}</span>!
+    </label>
+    <button className="ml-4 bg-transparent p-0 border-none" onClick={handleNotificationClick}>
+      <img src={notificationBell} alt="Notification Bell" className="w-8 h-8" />
+    </button>
+  </div>
 
       
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          {/* Users Card */}
-          <div className="bg-[#1976d2] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105">
-            <p className="text-white text-xl font-bold mb-2">Total Users</p>
-            <p className="text-white text-3xl">{userCount}</p>
-          </div>
+{/* Statistics Cards */}
+<div className="grid grid-cols-3 gap-4 mb-4">
+  {/* Users Card */}
+  <div className="bg-[#1976d2] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+    {/* Lottie Animation */}
+    <div className="w-16 h-16 mr-4">
+      <Lottie animationData={userAnimation} loop={true} className="w-full h-full" />
+    </div>
+    <div>
+      <p className="text-white text-xl font-bold">Total Users</p>
+      <p className="text-white text-5xl font-semibold">{userCount}</p> {/* Enlarged number */}
+    </div>
+  </div>
 
-          {/* Feedback Card */}
-          <div className="bg-[#0288d1] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105">
-            <p className="text-white text-xl font-bold mb-2">Feedback</p>
-            <p className="text-white text-3xl">{feedbackCount}</p>
-          </div>
+  {/* Feedback Card */}
+  <div className="bg-[#0288d1] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+    {/* Lottie Animation */}
+    <div className="w-16 h-16 mr-4">
+      <Lottie animationData={feedbackAnimation} loop={true} className="w-full h-full" />
+    </div>
+    <div>
+      <p className="text-white text-l font-bold">Feedback</p>
+      <p className="text-white text-xl font-semibold">{feedbackCount}</p> {/* Enlarged number */}
+    </div>
+  </div>
 
-          {/* Content Updates Card */}
-          <div className="bg-[#03a9f4] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105">
-            <p className="text-white text-xl font-bold mb-2">Content Updates</p>
-            <p className="text-white text-3xl">{contentUpdates}</p>
-          </div>
-        </div>
+  {/* Content Updates Card */}
+  <div className="bg-[#03a9f4] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+    {/* Lottie Animation */}
+    <div className="w-16 h-16 mr-4">
+      <Lottie animationData={contentUpdateAnimation} loop={true} className="w-full h-full" />
+    </div>
+    <div>
+      <p className="text-white text-lg font-bold">Content Updates</p>
+      <p className="text-white text-xl font-semibold">{contentUpdates}</p> {/* Enlarged number */}
+    </div>
+  </div>
+</div>
+
+
+
+
 
         {/* Dropdowns and Charts Section */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-6 mt-3">
           {/* Dropdown for Time Frame Analysis */}
-          <div className="flex flex-col w-full mb-4">
+          <div className="relative w-full max-w-xs">
             <label className="mb-1 text-sm font-medium text-[#141d70]">
               Select Time Frame for Active Users
             </label>
@@ -373,7 +435,7 @@ const Home = () => {
           </div>
 
           {/* Dropdown for Feedback Summary Report Type */}
-          <div className="flex flex-col w-full mb-4">
+          <div className="relative w-full max-w-xs">
             <label className="mb-1 text-sm font-medium text-[#141d70]">
               Select Report Type for Feedback Summary
             </label>
@@ -393,8 +455,8 @@ const Home = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-2 gap-4">
           {/* Line Chart for Active Users */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4">Active Users</h2>
+          <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">Active Users</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={activeUsersData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -413,8 +475,8 @@ const Home = () => {
           </div>
 
           {/* Bar Chart for Feedback Summary */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4">Feedback Summary</h2>
+          <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">Feedback Summary</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={Object.entries(filterFeedbackSummary()).map(
@@ -432,42 +494,164 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="mt-6">
-  {/* Outer Card */}
-  <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md">
-  <h2 className="text-2xl font-bold text-[#141d70] mb-2">Reports and Analysis</h2>
 
 
 
-{/* Dropdown for Report Selection */}
-<div className="flex flex-col mb-4">
-  <label className="mb-1 text-sm font-medium text-[#141d70]">Select Report Type</label>
-  <div className="inline-block">
-    <select
-      className="p-2 border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-      value={selectedReportForAnalysis}
-      onChange={(e) => setSelectedReportAnalysis(e.target.value)}
-    >
-      <option value="Bug Analysis Report">Bug Analysis Report</option>
-      <option value="Application Rating Overview">Application Rating Overview</option>
-    </select>
+
+
+
+
+ {/* Admin Content Table Section */}
+ <div className="flex h-screen bg-white font-nunito px-0">
+      <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+        {/* Admin Content Table Section */}
+        <div >
+          <h2 className="text-2xl font-bold mb-4 text-[#09d1e3]">Admin Announcements and Updates</h2>
+          <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-[#0e1550] text-white">
+              <tr>
+                <th className="py-2 px-4">Title</th>
+                <th className="py-2 px-4">Content Type</th>
+                <th className="py-2 px-4">Timestamp</th>
+                <th className="py-2 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {adminContents.length > 0 ? (
+                adminContents.map((content) => (
+                  <tr key={content.id} className="border-b">
+                    <td className="py-2 px-4">{content.title}</td>
+                    <td className="py-2 px-4">{content.contentType}</td>
+                    <td className="py-2 px-4">{new Date(content.timestamp).toLocaleString()}</td>
+                    <td className="py-2 px-4">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                        onClick={() => handleViewClick(content)}
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center py-4">No announcements or updates for admins.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+ {/* Admin Content Table Section */}
+ {isDialogOpen && selectedContent && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 p-4">
+    <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-2xl relative max-h-[80vh] overflow-y-auto">
+      {/* Dialog Title */}
+      <h2 className="text-xl font-semibold mb-4 text-[#09d1e3] text-center">
+        Content Details
+      </h2>
+
+      {/* Content Details */}
+      <div className="grid grid-cols-1 gap-4 text-sm">
+        {/* Title */}
+        <div className="flex flex-col items-start">
+          <div className="flex items-center">
+            <i className="fas fa-heading mr-2 text-gray-700"></i>
+            <p className="font-semibold text-gray-700">Title:</p>
+          </div>
+          <p className="my-0  text-gray-600">{selectedContent.title}</p>
+        </div>
+
+        {/* Message */}
+        <div className="flex flex-col items-start col-span-2">
+          <div className="flex items-center">
+            <i className="fas fa-comment mr-2 text-gray-700"></i>
+            <p className="font-semibold text-gray-700">Message:</p>
+          </div>
+          <p className="my-0 text-gray-600">{selectedContent.message}</p>
+        </div>
+
+        {/* Content Type, Channel, Audience */}
+        <div className="grid grid-cols-3 gap-4">
+          {/* Content Type */}
+          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+            <div className="flex items-center">
+              <i className="fas fa-tag mr-2 text-gray-700"></i>
+              <p className="font-semibold text-gray-700">Content Type</p>
+            </div>
+            <p className="text-gray-600">{selectedContent.contentType}</p>
+          </div>
+
+          {/* Channel */}
+          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+            <div className="flex items-center">
+              <i className="fas fa-bullhorn mr-2 text-gray-700"></i>
+              <p className="font-semibold text-gray-700">Channel</p>
+            </div>
+            <p className="text-gray-600">{selectedContent.channel}</p>
+          </div>
+
+          {/* Audience */}
+          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+            <div className="flex items-center">
+              <i className="fas fa-users mr-2 text-gray-700"></i>
+              <p className="font-semibold text-gray-700">Audience</p>
+            </div>
+            <p className="text-gray-600">{selectedContent.audience}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t-2 border-gray-200 my-4"></div>
+
+{/* User Info Section */}
+<div className="space-y-2 text-sm">
+  {/* Card Wrapper */}
+  <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+    {/* Grid Layout for 2 columns */}
+    <div className="grid grid-cols-2 gap-4">
+      {/* User Name */}
+      <div className="flex flex-col items-start">
+        <div className="flex items-center">
+          <i className="fas fa-user mr-2 text-gray-700"></i>
+          <p className="font-semibold text-gray-700">User Name</p>
+        </div>
+        <p className="text-gray-600">{selectedContent.userName}</p>
+      </div>
+
+      {/* User Email */}
+      <div className="flex flex-col items-start">
+        <div className="flex items-center">
+          <i className="fas fa-envelope mr-2 text-gray-700"></i>
+          <p className="font-semibold text-gray-700">User Email</p>
+        </div>
+        <p className="text-gray-600">{selectedContent.userEmail}</p>
+      </div>
+    </div>
   </div>
 </div>
 
 
-    {/* Analysis Display */}
-    <h3 className="text-lg font-bold mb-2 text-[#141d70]">{selectedReportForAnalysis}</h3>
-    {loading ? (
-      <p className="text-gray-500">Analyzing comments...</p>
-    ) : analysis ? (
-      <p className="text-gray-700">{analysis}</p>
-    ) : (
-      <p className="text-gray-500">No analysis available.</p>
-    )}
+
+      {/* Close Button */}
+      <div className="mt-6 text-center">
+        <button
+          className="w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition ease-in-out duration-150"
+          onClick={handleCloseDialog}
+        >
+          Close
+        </button>
+      </div>
+    </div>
   </div>
-</div>
+)}
 
 
+
+
+      </div>
+    </div>
 
 
 
@@ -477,3 +661,4 @@ const Home = () => {
 };
 
 export default Home;
+

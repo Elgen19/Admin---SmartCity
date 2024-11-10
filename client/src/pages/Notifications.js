@@ -8,6 +8,9 @@ import profile from "../assets/images/profile.png";
 import feedback from "../assets/images/feedback.png";
 import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
+import Lottie from 'lottie-react'
+import animationData from '../assets/lottifies/notifications.json';
+import HeaderCards from '../components/HeaderCards.js';
 
 const Notification = () => {
   const [activeLink, setActiveLink] = useState("/notification");
@@ -144,41 +147,49 @@ const Notification = () => {
       ) : (
         // Show the main content if the user has access
         <>
-          <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col">
-            <img
-              className="w-[200px] h-[200px] mx-auto mb-10"
-              src={adminImage}
-              alt="Company Logo"
-            />
-            <nav className="space-y-6">
-              {navLinks.map(({ link, icon, label }) => (
-                <a
-                  key={link}
-                  href={link}
-                  onClick={() => setActiveLink(link)}
-                  className={`flex items-center text-white text-xl hover:text-[#09d1e3] transition ${
-                    activeLink === link
-                      ? "font-bold border-l-4 border-[#09d1e3] pl-3"
-                      : ""
-                  }`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <img className="w-8 h-8 mr-3" src={icon} alt={`${label} Icon`} />
-                  {label}
-                </a>
-              ))}
-            </nav>
-            <div className="mt-auto">
-              <button
-                onClick={handleLogout}
-                className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+{/* Sidebar */ }
+<div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+  <img
+    className="w-[200px] h-[200px] mx-auto mb-10"
+    src={adminImage}
+    alt="Company Logo"
+  />
+  <nav className="space-y-6">
+    {navLinks.map(({ link, icon, label }) => (
+      <a
+        key={link}
+        href={link}
+        onClick={() => setActiveLink(link)}
+        className={`flex items-center text-white text-xl hover:text-[#09d1e3] transition ${
+          activeLink === link
+            ? "font-bold border-l-4 border-[#09d1e3] pl-3"
+            : ""
+        }`}
+        style={{ textDecoration: "none" }}
+      >
+        <img className="w-8 h-8 mr-3" src={icon} alt={`${label} Icon`} />
+        {label}
+      </a>
+    ))}
+  </nav>
+  <div className="mt-auto">
+    <button
+      onClick={handleLogout}
+      className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
+    >
+      Logout
+    </button>
+  </div>
+</div>
   
-          <div className="flex-1 flex flex-col p-10">
+<div className="flex-1 flex flex-col p-6 overflow-y-auto">
+
+<HeaderCards
+        title="Recent Notifications"
+        description="View recent notifications from updates or broadcasted messages from colleagues."
+        animationData={animationData}
+      />
+
             <div className="flex justify-between items-center w-full mb-6">
               <h1 className="text-[#09d1e3] text-4xl font-extrabold">
                 Notifications

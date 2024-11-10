@@ -8,6 +8,7 @@ const getRatingStats = async (req, res) => {
         const snapshot = await feedbackRef.once("value");
         const feedbackData = snapshot.val();
 
+        // Safeguard: Check if feedback data exists
         if (!feedbackData) {
             return res.status(404).json({ error: "No feedback data available." });
         }
@@ -15,9 +16,17 @@ const getRatingStats = async (req, res) => {
         // Convert feedback object to array to access the ratings
         const feedbackArray = Object.values(feedbackData);
 
-        // Extract ratings and ensure only numeric values are considered
-        const ratings = feedbackArray.map(feedback => feedback.rating).filter(rating => typeof rating === 'number');
+        // Safeguard: Ensure there are ratings to work with
+        if (feedbackArray.length === 0) {
+            return res.status(404).json({ error: "No feedback available to calculate ratings." });
+        }
 
+        // Extract ratings and ensure only numeric values are considered
+        const ratings = feedbackArray
+            .map(feedback => feedback.rating)
+            .filter(rating => typeof rating === 'number');
+
+        // Safeguard: Check if there are any valid numeric ratings
         if (ratings.length === 0) {
             return res.status(404).json({ error: "No ratings available." });
         }
@@ -26,6 +35,7 @@ const getRatingStats = async (req, res) => {
         const highestRating = Math.max(...ratings);
         const lowestRating = Math.min(...ratings);
         const averageRating = (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(2);
+
         // Count how many people gave the highest and lowest ratings
         const highestCount = ratings.filter(rating => rating === highestRating).length;
         const lowestCount = ratings.filter(rating => rating === lowestRating).length;

@@ -3,6 +3,8 @@ import { getDatabase, ref, get, update, set } from 'firebase/database';
 import CustomAlert from '../components/CustomAlert'; // Import your CustomAlert component
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import animationData from '../assets/lottifies/security.json';
+import HeaderCards from '../components/HeaderCards.js';
 
 const UpdateAdminAccess = () => {
   const [admins, setAdmins] = useState([]);
@@ -67,6 +69,7 @@ const UpdateAdminAccess = () => {
     ADMIN_ACTIVITY_LOGS: 'View logs of admin activities',
     NOTIFICATIONS: 'Manage notifications settings',
     ADMIN_PROFILE: 'Edit your admin profile',
+    ACTIVATE_DEACTIVATE_ACCOUNTS: 'Activate or deactivate accounts'
   };
 
   // Fetching all admins except SuperAdmin
@@ -74,17 +77,21 @@ const UpdateAdminAccess = () => {
     try {
       const allAdminsRef = ref(db, 'admins');
       const snapshot = await get(allAdminsRef);
-
+  
       if (snapshot.exists()) {
         const allAdmins = snapshot.val();
         const filteredAdmins = Object.keys(allAdmins)
-          .filter(adminId => allAdmins[adminId].role !== 'SuperAdmin') // Exclude SuperAdmin
+          .filter(adminId => 
+            allAdmins[adminId].role !== 'SuperAdmin' && 
+            allAdmins[adminId].isApproved === true // Only include if isApproved is true
+          )
           .map(adminId => ({
             id: adminId,
             ...allAdmins[adminId],
           }));
+          
         setAdmins(filteredAdmins);
-
+  
         // Initialize selected access for each admin
         const accessState = {};
         filteredAdmins.forEach(admin => {
@@ -98,6 +105,7 @@ const UpdateAdminAccess = () => {
       showAlert('Error fetching admins.', 'error');
     }
   };
+  
 
   useEffect(() => {
     fetchAdmins();
@@ -202,7 +210,7 @@ const UpdateAdminAccess = () => {
           </div>
         </div>
       ) : (
-     <div className="container mx-10 py-8 font-nunito">
+     <div className="font-nunito w-full  flex-col overflow-y-auto">
       {alert.visible && (
         <CustomAlert
           message={alert.message}
@@ -210,9 +218,12 @@ const UpdateAdminAccess = () => {
           onClose={closeAlert}
         />
       )}
-      <h1 className="text-3xl font-bold text-[#09d1e3] mb-2 nunito-font">Update Admin Access</h1>
-      <p className="text-gray-600 mb-6 nunito-font">Modify the access permissions for each admin as needed.</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <HeaderCards
+        title="Update Admin Access"
+        description="Modify the access permissions for each admin as needed."
+        animationData={animationData}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5 px-5 py-3">
         {admins.length > 0 ? (
           admins.map((admin) => (
             <div key={admin.id} className="bg-yellow-100 shadow-md rounded-lg p-6">

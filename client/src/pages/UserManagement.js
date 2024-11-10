@@ -8,6 +8,9 @@ import feedback from "../assets/images/feedback.png";
 import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import activeUsers from "../assets/images/active_users.png";
+import Lottie from 'lottie-react'
+import animationData from '../assets/lottifies/user_management.json';
+import HeaderCards from '../components/HeaderCards.js';
 
 const UserManagement = () => {
   const [activeLink, setActiveLink] = useState("/user-management");
@@ -77,6 +80,10 @@ const UserManagement = () => {
     navigate("/home"); // Redirect to home
   };
 
+  const handlePromoteAdmins = () => {
+    navigate("/promote-admin"); // Navigate to the admin activity logs page
+  };
+
   
 
   return (
@@ -101,55 +108,55 @@ const UserManagement = () => {
     ) : (
       <div className="flex h-screen bg-white font-nunito">
         {/* Sidebar */}
-        <div className="w-1/4 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
-          <img
-            className="w-[200px] h-[200px] mx-auto mb-10"
-            src={adminImage} // Updated with your image path
-            alt="Company Logo"
-          />
-          <nav className="space-y-6">
-            {navLinks.map(({ link, icon, label }) => (
-              <a
-                key={link}
-                href={link}
-                onClick={() => setActiveLink(link)}
-                className={`flex items-center text-xl transition ${
-                  activeLink === link
-                    ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3" // Active link color
-                    : "text-white hover:text-[#09d1e3]"
-                }`}
-                style={{ textDecoration: "none" }}
-              >
-                <img
-                  className="w-8 h-8 mr-3 transition"
-                  src={activeLink === link ? activeUsers : icon} // Use active icon if link is active
-                  alt={`${label} Icon`}
-                />
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="mt-auto">
-            <button
-              onClick={handleLogout}
-              className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
+        <div className="fixed left-0 top-0 bottom-0 w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+  <img
+    className="w-[200px] h-[200px] mx-auto mb-10"
+    src={adminImage} // Updated with your image path
+    alt="Company Logo"
+  />
+  <nav className="space-y-6 overflow-y-auto">
+    {navLinks.map(({ link, icon, label }) => (
+      <a
+        key={link}
+        href={link}
+        onClick={() => setActiveLink(link)}
+        className={`flex items-center text-xl transition ${
+          activeLink === link
+            ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3" // Active link color
+            : "text-white hover:text-[#09d1e3]"
+        }`}
+        style={{ textDecoration: "none" }}
+      >
+        <img
+          className="w-8 h-8 mr-3 transition"
+          src={activeLink === link ? activeUsers : icon} // Use active icon if link is active
+          alt={`${label} Icon`}
+        />
+        {label}
+      </a>
+    ))}
+  </nav>
+  <div className="mt-auto">
+    <button
+      onClick={handleLogout}
+      className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
+    >
+      Logout
+    </button>
+  </div>
+</div>
 
         {/* Options Card Section */}
-        <div className="flex-1 flex flex-col p-10">
+        <div className="ml-[20%] p-6 ">
           {/* Header with Title */}
-          <div className="flex justify-between items-center w-full mb-6">
-            <h1 className="text-[#09d1e3] text-4xl font-extrabold">
-              User Management
-            </h1>
-          </div>
+          <HeaderCards
+        title="User Management"
+        description="Manage user and admin operations efficiently, including sending admin invitations, approving registrations, updating access levels, viewing activity logs, and controlling account statuses. You can activate or deactivate user/admin accounts and promote admins as needed to ensure smooth user management."
+        animationData={animationData}
+      />
 
           {/* Card for Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {/* Card for Send Invite */}
             <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
               <h2 className="text-lg font-bold mb-2">Send Invite</h2>
@@ -221,6 +228,23 @@ const UserManagement = () => {
                 Activate/Deactivate
               </button>
             </div>
+
+
+             {/* Card for Admin Promotion */}
+             <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+              <h2 className="text-lg font-bold mb-2">Promote Admin</h2>
+              <p className="text-gray-600 mb-4">
+                Promote admins to SuperAdmin role.  
+              </p>
+              <button
+                onClick={handlePromoteAdmins}
+                className="bg-[#09d1e3] text-white px-4 py-2 rounded-lg hover:bg-[#08b3d3] transition"
+              >
+                Promote
+              </button>
+            </div>
+
+
           </div>
         </div>
       </div> )}
