@@ -17,14 +17,7 @@ const { sendAccountStatusEmail } = require('./controllers/statusController');
 
 const app = express();
 
-app.use(cors({
-  origin: 'https://admin-smart-city.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
 
-app.options('*', cors()); // Preflight support for all routes
 
 app.use(bodyParser.json());
 
