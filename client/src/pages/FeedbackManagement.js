@@ -46,17 +46,30 @@ const FeedbackManagement = () => {
   const [error, setError] = useState(null);
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
-  const BASE_URL = "https://smartcity-dn34.onrender.com";
+  const BASE_URL = "https://smartcity-backend.vercel.app";
 
   // Function to fetch feedback summary for a given tone
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${BASE_URL}/api/tone/analyze-feedback-tone`,
-        { tone }  // Sending tone in the request body
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tone }), // Sending tone in the request body
+        }
       );
-  
-      setSummaryState(response.data.analysis); // Set the analysis from the response
+
+      if (!response.ok) {
+        throw new Error(
+          `Error fetching ${tone} summary: ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+      setSummaryState(data.analysis); // Set the analysis from the response
     } catch (error) {
       console.error(error);
       setError(error.message);
