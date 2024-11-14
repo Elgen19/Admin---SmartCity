@@ -23,12 +23,13 @@ const app = express();
 
 
 
-app.use(cors({
-  origin: 'https://admin-smart-city.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Define the HTTP methods your server supports
-  allowedHeaders: ['Content-Type', 'Authorization'], // Add headers your server uses
-  credentials: true // Enable credentials if needed (e.g., for cookies)
-}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://admin-smart-city.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 
 
 app.options('*', cors()); // Preflight support for all routes
