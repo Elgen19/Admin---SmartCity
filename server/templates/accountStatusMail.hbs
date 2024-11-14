@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            color: #000000;
+            margin: 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+            p {
+      font-size: 16px;
+      color: #000000;
+      line-height: 1.6;
+    }
+
+      h1 {
+      color: #09d1e3; /* New title color */
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    </style>
+</head>
+<body>
+    <h1>{{subject}}</h1>
+    <p>Dear {{name}},</p>
+    <p>{{message}}</p>
+    {{#if (eq action "approve")}}
+        <p>You can now sign in using the following link: <br> <br> <a href="http://localhost:3000" class="button" style="background-color: #007bff; color: #ffffff;">Sign In</a></p>
+    {{/if}}
+    <p>Thank you,<br>SmartCity Admin Team</p>
+</body>
+</html>
