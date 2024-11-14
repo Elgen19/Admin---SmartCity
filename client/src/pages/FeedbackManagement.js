@@ -52,7 +52,7 @@ const FeedbackManagement = () => {
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
     try {
       const response = await fetch(
-        `api/tone/analyze-feedback-tone`,
+        `${BASE_URL}/api/tone/analyze-feedback-tone`,
         {
           method: "POST",
           headers: {
