@@ -15,29 +15,19 @@ const notifyRoutes = require('./routes/notifyRoutes');
 const { sendAccountStatusEmail } = require('./controllers/statusController');
 
 
-
-
-
 const app = express();
 
-
-
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://admin-smart-city.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
-
+app.use(cors({
+  origin: 'https://admin-smart-city.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 
 app.options('*', cors()); // Preflight support for all routes
 
-
-
 app.use(bodyParser.json());
-// Routes
+
 
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
