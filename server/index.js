@@ -23,8 +23,13 @@ const app = express();
 
 
 
-// Middleware
-app.use(cors()); // Enable CORS
+app.use(cors({
+  origin: 'https://admin-smart-city.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Define the HTTP methods your server supports
+  allowedHeaders: ['Content-Type', 'Authorization'], // Add headers your server uses
+  credentials: true // Enable credentials if needed (e.g., for cookies)
+}));
+
 app.use(bodyParser.json());
 // Routes
 
