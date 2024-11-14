@@ -30,6 +30,11 @@ app.use(cors({
   credentials: true // Enable credentials if needed (e.g., for cookies)
 }));
 
+
+app.options('*', cors()); // Preflight support for all routes
+
+
+
 app.use(bodyParser.json());
 // Routes
 
