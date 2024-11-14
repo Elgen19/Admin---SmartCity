@@ -23,6 +23,10 @@ app.use(cors({
   credentials: true,
 }));
 
+
+// Ensure OPTIONS requests are handled correctly (for preflight)
+app.options('*', cors());
+
 // Body parser middleware
 app.use(bodyParser.json());
 
