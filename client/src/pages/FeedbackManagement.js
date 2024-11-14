@@ -46,13 +46,13 @@ const FeedbackManagement = () => {
   const [error, setError] = useState(null);
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
-  const BASE_URL = "https://smartcity-backend.vercel.app";
+  const BASE_URL = "";
 
   // Function to fetch feedback summary for a given tone
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/tone/analyze-feedback-tone`,
+        `https://smartcity-backend.vercel.app/api/tone/analyze-feedback-tone`,
         {
           method: "POST",
           headers: {
@@ -85,13 +85,13 @@ const FeedbackManagement = () => {
   const fetchCommentAnalysis = async () => {
     try {
       const requests = [
-        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
+        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
           type: "Bug Report",
         }),
-        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
+        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
           type: "Feature Suggestion",
         }),
-        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
+        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
           type: "General Feedback",
         }),
       ];
