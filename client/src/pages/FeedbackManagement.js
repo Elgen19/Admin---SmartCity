@@ -46,7 +46,7 @@ const FeedbackManagement = () => {
   const [error, setError] = useState(null);
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
-  const BASE_URL = "https://smartcity-backend.vercel.app";
+  const BASE_URL = "https://smartcity-dn34.onrender.com";
 
   // Function to fetch feedback summary for a given tone
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
