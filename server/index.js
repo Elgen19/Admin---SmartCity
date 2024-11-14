@@ -3,16 +3,16 @@ require('dotenv').config(); // Load environment variables
 const express = require('express');
 const cors = require('cors'); // Import CORS
 const bodyParser = require('body-parser');
-const inviteRoutes = require('../routes/inviteRoutes');
-const signupRoutes = require('../routes/signUpRoutes');
-const authRoutes  = require('../routes/authRoutes');
-const aiRoutes = require("../routes/aiRoutes");
-const ratingRoutes = require("../routes/ratingRoute");
-const { analyzeFeedbackBasedOnTone } = require('../controllers/toneClassifierController');
-const { analyzeFeedbackBasedOnType } = require('../controllers/typeClassifierController');
-const sendContentToAudienceRoutes = require('../routes/sendRoutes');
-const notifyRoutes = require('../routes/notifyRoutes');
-const { sendAccountStatusEmail } = require('../controllers/statusController');
+const inviteRoutes = require('./routes/inviteRoutes');
+const signupRoutes = require('./routes/signUpRoutes');
+const authRoutes  = require('./routes/authRoutes');
+const aiRoutes = require("./routes/aiRoutes");
+const ratingRoutes = require("./routes/ratingRoute");
+const { analyzeFeedbackBasedOnTone } = require('./controllers/toneClassifierController');
+const { analyzeFeedbackBasedOnType } = require('./controllers/typeClassifierController');
+const sendContentToAudienceRoutes = require('./routes/sendRoutes');
+const notifyRoutes = require('./routes/notifyRoutes');
+const { sendAccountStatusEmail } = require('./controllers/statusController');
 
 
 
