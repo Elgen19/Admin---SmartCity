@@ -51,25 +51,12 @@ const FeedbackManagement = () => {
   // Function to fetch feedback summary for a given tone
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${BASE_URL}/api/tone/analyze-feedback-tone`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tone }), // Sending tone in the request body
-        }
+        { tone }  // Sending tone in the request body
       );
-
-      if (!response.ok) {
-        throw new Error(
-          `Error fetching ${tone} summary: ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      setSummaryState(data.analysis); // Set the analysis from the response
+  
+      setSummaryState(response.data.analysis); // Set the analysis from the response
     } catch (error) {
       console.error(error);
       setError(error.message);
