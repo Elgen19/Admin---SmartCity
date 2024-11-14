@@ -213,7 +213,7 @@ const FeedbackManagement = () => {
   useEffect(() => {
     const fetchRatingStats = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/rating/get-ratings`);
+        const response = await axios.get(`/api/rating/get-ratings`);
         setRatingStats(response.data);
       } catch (error) {
         // Check if it's a 404 error
