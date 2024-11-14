@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/tone", analyzeFeedbackBasedOnTone);
+app.use("/api/tone", cors(), analyzeFeedbackBasedOnTone);
 app.use("/api/type", analyzeFeedbackBasedOnType);
 app.use("/api/sender", sendContentToAudienceRoutes);
 app.use("/api/notify", notifyRoutes);
