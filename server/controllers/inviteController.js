@@ -7,7 +7,7 @@ const transporter = require('../config/mailConfig'); // Import the transporter f
 const { timeStamp } = require('console');
 
 // Send invite to a new admin
-exports.sendInvite = async (req, res) => {
+const sendInvite = async (req, res) => {
   const { email } = req.body;
 
   // Assuming you have middleware that sets req.user for authenticated admins
@@ -66,7 +66,7 @@ exports.sendInvite = async (req, res) => {
 };
 
 // Verify the invitation token
-exports.verifyInvite = async (req, res) => {
+const verifyInvite = async (req, res) => {
   const { token } = req.query;
 
   try {
@@ -94,3 +94,4 @@ exports.verifyInvite = async (req, res) => {
 };
 
 
+module.exports = { sendInvite, verifyInvite };
