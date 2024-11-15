@@ -4,6 +4,6 @@ const { analyzeFeedback, analyzeFeedbackBasedOnTone } = require("../controllers/
 const router = express.Router();
 
 // Define the route for analyzing feedback
-router.get("/analyze-feedback-tone", analyzeFeedbackBasedOnTone);
+router.post("/analyze-feedback-tone", analyzeFeedbackBasedOnTone);
 
 module.exports = router;
