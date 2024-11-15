@@ -42,7 +42,7 @@ const sendInvite = async (req, res) => {
     const signupLink = `https://admin-smart-city.vercel.app/signup?token=${token}`;
 
     // Read the Handlebars template
-    const templateSource = fs.readFileSync('templates/adminInvitation.hbs', 'utf8');
+    const templateSource = fs.readFileSync(path.join(__dirname, '..', 'templates', 'adminInvitation.hbs'), 'utf8');
     const template = handlebars.compile(templateSource);
 
     // Generate the email HTML
