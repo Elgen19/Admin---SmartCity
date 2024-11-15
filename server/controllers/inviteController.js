@@ -39,7 +39,7 @@ exports.sendInvite = async (req, res) => {
     });
 
     // Generate the signup link
-    const signupLink = `http://localhost:3000/signup?token=${token}`;
+    const signupLink = `https://admin-smart-city.vercel.app/signup?token=${token}`;
 
     // Read the Handlebars template
     const templateSource = fs.readFileSync('templates/adminInvitation.hbs', 'utf8');

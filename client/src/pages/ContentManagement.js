@@ -49,6 +49,8 @@ const ContentManagement = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   const currentUserId = auth.currentUser;
+  const BASE_URL = "https://smartcity-backend.vercel.app";
+
 
   // Handle scheduled time change
   const handleOpenDialog = (content) => {
@@ -179,7 +181,7 @@ const ContentManagement = () => {
 
     if (normalizedChannel === "email") {
       // Send email notification
-      fetch("http://localhost:5000/api/sender/send-content", {
+      fetch(`${BASE_URL}/api/sender/send-content`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

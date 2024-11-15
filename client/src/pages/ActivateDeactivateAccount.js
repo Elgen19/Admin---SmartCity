@@ -31,6 +31,8 @@ const ActivateDeactivateAccount = () => {
   const [hasAccess, setHasAccess] = useState(true);
   const navigate = useNavigate();
   const auth = getAuth();
+  const BASE_URL = "https://smartcity-backend.vercel.app";
+
 
   useEffect(() => {
     // Check authentication state
@@ -146,8 +148,9 @@ const ActivateDeactivateAccount = () => {
         throw new Error("Invalid node specified.");
       }
 
+      
       // Send status update to the backend
-      await axios.post("http://localhost:5000/api/status/send-status", {
+      await axios.post(`${BASE_URL}/api/status/send-status`, {
         email,
         fullName,
         isActive: !isActive,

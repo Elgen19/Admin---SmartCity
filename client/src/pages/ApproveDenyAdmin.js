@@ -18,6 +18,8 @@ const ApproveDenyAdmin = () => {
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
   const navigate = useNavigate();
+  const BASE_URL = "https://smartcity-backend.vercel.app";
+
 
   useEffect(() => {
     // Check authentication state
@@ -100,7 +102,8 @@ const ApproveDenyAdmin = () => {
       await update(adminRef, { isApproved: true });
       toast.success("Admin approved successfully!");
 
-      await axios.post("http://localhost:5000/api/notify/email-admin", {
+      
+      await axios.post(`${BASE_URL}/api/notify/email-admin`, {
         email: adminEmail,
         name: adminName,
         action: "approve",
@@ -131,7 +134,7 @@ const ApproveDenyAdmin = () => {
       await remove(adminRef);
       toast.info("Admin request denied.");
 
-      await axios.post("http://localhost:5000/api/notify/email-admin", {
+      await axios.post(`${BASE_URL}/api/notify/email-admin`, {
         email: adminEmail,
         name: adminName,
         action: "deny",

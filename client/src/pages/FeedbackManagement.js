@@ -46,13 +46,13 @@ const FeedbackManagement = () => {
   const [error, setError] = useState(null);
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
-  const BASE_URL = "";
+  const BASE_URL = "https://smartcity-backend.vercel.app";
 
   // Function to fetch feedback summary for a given tone
   const fetchFeedbackSummary = async (tone, setSummaryState) => {
     try {
       const response = await fetch(
-        `https://smartcity-backend.vercel.app/api/tone/analyze-feedback-tone`,
+        `${BASE_URL}/api/tone/analyze-feedback-tone`,
         {
           method: "POST",
           headers: {
@@ -85,13 +85,13 @@ const FeedbackManagement = () => {
   const fetchCommentAnalysis = async () => {
     try {
       const requests = [
-        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
+        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
           type: "Bug Report",
         }),
-        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
+        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
           type: "Feature Suggestion",
         }),
-        axios.post(`https://smartcity-backend.vercel.app/api/type/analyze-feedback-type`, {
+        axios.post(`${BASE_URL}/api/type/analyze-feedback-type`, {
           type: "General Feedback",
         }),
       ];
@@ -213,7 +213,7 @@ const FeedbackManagement = () => {
   useEffect(() => {
     const fetchRatingStats = async () => {
       try {
-        const response = await axios.get(`https://smartcity-backend.vercel.app/api/rating/get-ratings`);
+        const response = await axios.get(`${BASE_URL}/api/rating/get-ratings`);
         setRatingStats(response.data);
       } catch (error) {
         // Check if it's a 404 error

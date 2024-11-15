@@ -26,6 +26,8 @@ function SignUp() {
 
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get('token');
+  const BASE_URL = "https://smartcity-backend.vercel.app";
+
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -34,11 +36,10 @@ function SignUp() {
         setLoading(false);
         return;
       }
-
       try {
         const response = await axios.get(
           // `https://smartcity-dn34.onrender.com/api/verify-invite?token=${token}`
-          `http://localhost:5000/api/verify-invite?token=${token}`
+          `${BASE_URL}/api/verify-invite?token=${token}`
         );
         setEmail(response.data.email); // Store the email from the response
         setTokenValid(true);
@@ -87,7 +88,7 @@ function SignUp() {
 
     setTimeout(async () => {
       try {
-        await axios.post('http://localhost:5000/api/signup', {
+        await axios.post(`${BASE_URL}/api/signup`, {
           token,
           name: fullName,
           email, // Send the email value directly from the state
