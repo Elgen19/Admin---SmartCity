@@ -15,7 +15,7 @@ function Invite() {
   const [authLoading, setAuthLoading] = useState(true); // State to track auth loading
   const [showAccessMessage, setShowAccessMessage] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
-  const BASE_URL = "https://smartcity-backend.vercel.app";
+
 
 
   const navigate = useNavigate();
@@ -70,10 +70,14 @@ function Invite() {
     setStatusType(""); // Clear previous status type
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/invites/send-invite`,
+        `https://smartcity-backend.vercel.app/api/invites/send-invite`,
         { email },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,  // Ensures cookies are sent with the request if needed
+        }
       );
+      
 
       // Log the admin activity after sending the invite
       const auth = getAuth();
