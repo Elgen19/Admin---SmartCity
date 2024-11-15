@@ -7,11 +7,11 @@ const signupRoutes = require('./routes/signUpRoutes');
 const authRoutes  = require('./routes/authRoutes');
 const aiRoutes = require("./routes/aiRoutes");
 const ratingRoutes = require("./routes/ratingRoute");
-const analyzeFeedbackBasedOnTone = require('./routes/toneClassiferRoute')
-const analyzeFeedbackBasedOnType = require('./routes/typeRoutes')
+const toneRoutes = require('./routes/toneClassiferRoute')
+const typeRoutes = require('./routes/typeRoutes')
 const sendContentToAudienceRoutes = require('./routes/sendRoutes');
 const notifyRoutes = require('./routes/notifyRoutes');
-const sendAccountStatusEmail =   require('./routes/statusRoutes');
+const statusRoutes =   require('./routes/statusRoutes');
 
 const app = express();
 
@@ -34,13 +34,13 @@ app.use(bodyParser.json());
 app.use('/api/invites', inviteRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/tone", analyzeFeedbackBasedOnTone);
-app.use("/api/type", analyzeFeedbackBasedOnType);
+app.use("/api/tone", toneRoutes);
+app.use("/api/type", typeRoutes);
 app.use("/api/sender", sendContentToAudienceRoutes);
 app.use("/api/notify", notifyRoutes);
 app.use('/api', signupRoutes);
 app.use('/api/rating', ratingRoutes);
-app.use('/api/status', sendAccountStatusEmail);
+app.use('/api/status', statusRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
