@@ -94,3 +94,7 @@ exports.verifyInvite = async (req, res) => {
 };
 
 
+module.exports = {
+  sendInvite,
+  verifyInvite
+};
