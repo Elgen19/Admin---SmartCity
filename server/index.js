@@ -7,11 +7,11 @@ const signupRoutes = require('./routes/signUpRoutes');
 const authRoutes  = require('./routes/authRoutes');
 const aiRoutes = require("./routes/aiRoutes");
 const ratingRoutes = require("./routes/ratingRoute");
-const { analyzeFeedbackBasedOnTone } = require('./controllers/toneClassifierController');
-const { analyzeFeedbackBasedOnType } = require('./controllers/typeClassifierController');
+const analyzeFeedbackBasedOnTone = require('./routes/toneClassiferRoute')
+const analyzeFeedbackBasedOnType = require('./routes/typeRoutes')
 const sendContentToAudienceRoutes = require('./routes/sendRoutes');
 const notifyRoutes = require('./routes/notifyRoutes');
-const { sendAccountStatusEmail } = require('./controllers/statusController');
+const sendAccountStatusEmail =   require('./routes/statusRoutes');
 
 const app = express();
 
