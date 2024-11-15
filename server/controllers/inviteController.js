@@ -41,19 +41,26 @@ const sendInvite = async (req, res) => {
     // Generate the signup link
     const signupLink = `https://admin-smart-city.vercel.app/signup?token=${token}`;
 
-    // Read the Handlebars template
-    const templateSource = fs.readFileSync(path.join(__dirname, '..', 'templates', 'adminInvitation.hbs'), 'utf8');
-    const template = handlebars.compile(templateSource);
-
-    // Generate the email HTML
-    const emailHTML = template({ signupLink });
+    // Build the email content directly (no Handlebars needed)
+    const emailHTML = `
+      <html>
+        <body>
+          <h2>You're Invited to Join as an Admin</h2>
+          <p>Dear User,</p>
+          <p>You have been invited to become an admin on our platform. Please click the link below to complete your registration:</p>
+          <p><a href="${signupLink}">Sign up and become an Admin</a></p>
+          <p>This invitation will expire in 24 hours.</p>
+          <p>If you did not request this invitation, please ignore this email.</p>
+        </body>
+      </html>
+    `;
 
     // Setup email data
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Admin Invitation',
-      html: emailHTML, // Use the generated HTML from the template
+      html: emailHTML, // Use the HTML string created above
     };
 
     // Send email using the transporter from mailConfig
@@ -64,6 +71,7 @@ const sendInvite = async (req, res) => {
     res.status(500).json({ message: 'Error sending invitation' });
   }
 };
+
 
 // Verify the invitation token
 const verifyInvite = async (req, res) => {
