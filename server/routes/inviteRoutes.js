@@ -1,11 +1,10 @@
-// server/routes/inviteRoutes.js
 const express = require('express');
 const inviteController = require('../controllers/inviteController');
-const authenticate = require('../middleware/authMiddleware'); // Import your auth middleware
+const authenticate = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.use(authenticate); // Apply authentication middleware
-
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.post('/send-invite', inviteController.sendInvite);
 router.get('/verify-invite', inviteController.verifyInvite);
