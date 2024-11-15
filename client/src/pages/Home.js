@@ -50,6 +50,7 @@ const Home = () => {
   const [adminContents, setAdminContents] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const BASE_URL = "https://smartcity-backend.vercel.app";
 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -134,7 +135,7 @@ const Home = () => {
     try {
       if (reportType === 'Bug Analysis Report') {
         // Fetch bug analysis report
-        const response = await axios.get('http://localhost:5000/api/ai/analyze-feedback'); // Endpoint for analysis
+        const response = await axios.get(`${BASE_URL}/api/ai/analyze-feedback`); // Endpoint for analysis
 
         // Remove "Summary:" from the beginning of the response string
         const cleanAnalysis = response.data.analysis.replace(/^Summary:\s*/, '');
@@ -142,7 +143,7 @@ const Home = () => {
 
       } else if (reportType === 'Application Rating Overview') {
         // Fetch rating analysis report
-        const response = await axios.get('http://localhost:5000/api/rating/get-ratings'); // Endpoint for ratings
+        const response = await axios.get(`${BASE_URL}/api/rating/get-ratings`); // Endpoint for ratings
         const { highestRating, lowestRating, averageRating } = response.data;
 
         // Log the returned values for debugging
