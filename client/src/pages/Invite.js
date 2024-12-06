@@ -74,7 +74,7 @@ function Invite() {
         { email },
         {
           headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,  // Ensures cookies are sent with the request if needed
+          withCredentials: true, 
         }
       );
       
