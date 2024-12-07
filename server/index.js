@@ -1,6 +1,5 @@
-require('dotenv').config(); // Load environment variables
 const express = require('express');
-const cors = require('cors'); // Import CORS
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const inviteRoutes = require('./routes/inviteRoutes');
 const signupRoutes = require('./routes/signUpRoutes');
@@ -11,21 +10,24 @@ const toneRoutes = require('./routes/toneClassiferRoute')
 const typeRoutes = require('./routes/typeRoutes')
 const sendContentToAudienceRoutes = require('./routes/sendRoutes');
 const notifyRoutes = require('./routes/notifyRoutes');
-const statusRoutes =   require('./routes/statusRoutes');
+const statusRoutes = require('./routes/statusRoutes');
 
 const app = express();
 
 // CORS configuration
+const allowedOrigins = ['https://admin-smart-city.vercel.app']; // Allow your frontend's URL
 app.use(cors({
-  origin: 'https://admin-smart-city.vercel.app',  // Allow your frontend's URL
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: true,  // Allow cookies and credentials
 }));
-
-
-// Ensure OPTIONS requests are handled correctly (for preflight)
-app.options('*', cors());
 
 // Body parser middleware
 app.use(bodyParser.json());
