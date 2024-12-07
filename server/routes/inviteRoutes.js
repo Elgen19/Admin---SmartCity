@@ -1,12 +1,13 @@
 const express = require('express');
-const {inviteController} = require('../controllers/inviteController');
+const { sendInvite, verifyInvite } = require('../controllers/inviteController');
 const authenticate = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Apply authentication to all routes
 router.use(authenticate);
 
-router.post('/send-invite', inviteController.sendInvite);
-router.get('/verify-invite', inviteController.verifyInvite);
+router.post('/send-invite', sendInvite);
+router.get('/verify-invite', verifyInvite);
+
 
 module.exports = router;
