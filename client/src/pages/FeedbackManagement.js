@@ -653,7 +653,7 @@ const FeedbackManagement = () => {
               </h4>
               <p className="text-green-600">
                 {positiveFeedbackSummary ||
-                  "Loading positive feedback summary..."}
+                  "No positive feedbacks found."}
               </p>
             </div>
 
@@ -664,7 +664,7 @@ const FeedbackManagement = () => {
               </h4>
               <p className="text-red-600">
                 {negativeFeedbackSummary ||
-                  "Loading negative feedback summary..."}
+                  "No negative feedbacks found."}
               </p>
             </div>
           </div>
