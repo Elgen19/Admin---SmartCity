@@ -79,7 +79,7 @@ exports.signup = async (req, res) => {
       createdAt: Date.now(),
       isApproved: false,
       role: "Admin",
-      access: "FEEDBACK_MANAGEMENT, HOME, CONTENT_MANAGEMENT, NOTIFICATIONS, ADMIN_PROFILE",
+      access: "FEEDBACK_MANAGEMENT, HOME, CONTENT_MANAGEMENT, NOTIFICATIONS, ADMIN_PROFILE, TASK_MANAGEMENT",
       active: true,
     });
 

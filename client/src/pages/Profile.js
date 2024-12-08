@@ -10,6 +10,8 @@ import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import photo from "../assets/images/male.png";
 import activeProfile from "../assets/images/active_profile.png";
+import task from "../assets/images/task_inactive.png";
+
 
 const Profile = () => {
   const [activeLink, setActiveLink] = useState("/profile");
@@ -29,6 +31,8 @@ const Profile = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
+    { link: "/task-management", icon: task, label: "Task Management" },
+
   ];
 
   useEffect(() => {

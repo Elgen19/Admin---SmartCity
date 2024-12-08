@@ -15,6 +15,7 @@ import UpdateAdminAccess from './pages/UpdateAdminAccess';
 import ActivateDeactivateAccount from './pages/ActivateDeactivateAccount';
 import ActivityLogs from './pages/ActivityLogs';
 import PromoteAdmin from './pages/PromoteAdmin';
+import TaskManagement from './pages/TaskManagement';
 
 import './styles/tailwind.css'
 
@@ -39,15 +40,7 @@ function App() {
         <Route path="/activate-deactivate-account" element={<ActivateDeactivateAccount />} />
         <Route path="/admin-activity-logs" element={<ActivityLogs />} />
         <Route path="/promote-admin" element={<PromoteAdmin />} />
-
-
-
-
-
-
-
-
-
+        <Route path="/task-management" element={<TaskManagement />} />
 
 
         {/* Add other routes here */}

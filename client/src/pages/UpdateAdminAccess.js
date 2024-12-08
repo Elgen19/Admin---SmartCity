@@ -62,14 +62,11 @@ const UpdateAdminAccess = () => {
     FEEDBACK_MANAGEMENT: 'Manage user feedback',
     HOME: 'Access the home dashboard',
     CONTENT_MANAGEMENT: 'Create and manage content',
-    INVITE_NEW_ADMIN: 'Invite new admins to the system',
-    APPROVE_DENY_ADMIN_REGISTRATION: 'Approve or deny admin registrations',
     VIEW_USER_INFORMATION: 'View information of registered users',
-    UPDATE_ADMIN_ACCESS: 'Modify access permissions for other admins',
     ADMIN_ACTIVITY_LOGS: 'View logs of admin activities',
     NOTIFICATIONS: 'Manage notifications settings',
     ADMIN_PROFILE: 'Edit your admin profile',
-    ACTIVATE_DEACTIVATE_ACCOUNTS: 'Activate or deactivate accounts'
+    TASK_MANAGEMENT: 'Create and manage task from issues'
   };
 
   // Fetching all admins except SuperAdmin

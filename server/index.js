@@ -11,11 +11,15 @@ const typeRoutes = require('./routes/typeRoutes')
 const sendContentToAudienceRoutes = require('./routes/sendRoutes');
 const notifyRoutes = require('./routes/notifyRoutes');
 const statusRoutes = require('./routes/statusRoutes');
+const issueAndSuggestionRoutes = require('./routes/issueAndSuggestionClassifierRoutes');
+
 
 const app = express();
 
 // CORS configuration
-const allowedOrigins = ['https://admin-smart-city.vercel.app']; // Allow your frontend's URL
+// const allowedOrigins = ['https://admin-smart-city.vercel.app']; // Allow your frontend's URL
+const allowedOrigins = ['http://localhost:3000']; // Allow your frontend's URL
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -43,6 +47,7 @@ app.use("/api/notify", notifyRoutes);
 app.use('/api', signupRoutes);
 app.use('/api/rating', ratingRoutes);
 app.use('/api/status', statusRoutes);
+app.use('/api/issue', issueAndSuggestionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

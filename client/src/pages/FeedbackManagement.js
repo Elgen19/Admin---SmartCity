@@ -23,6 +23,8 @@ import activeFeedback from "../assets/images/active_feedback.png";
 import Lottie from 'lottie-react'
 import animationData from '../assets/lottifies/feeback.json';
 import HeaderCards from '../components/HeaderCards.js';
+import task from "../assets/images/task_inactive.png";
+
 
 const FeedbackManagement = () => {
   const [activeLink, setActiveLink] = useState("/feedback-management");
@@ -209,6 +211,8 @@ const FeedbackManagement = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
+    { link: "/task-management", icon: task, label: "Task Management" },
+
   ];
   useEffect(() => {
     const fetchRatingStats = async () => {

@@ -30,6 +30,8 @@ import Lottie from 'lottie-react'
 import userAnimation from '../assets/lottifies/users.json'; // Replace with actual path
 import feedbackAnimation from '../assets/lottifies/feeback.json'; // Replace with actual path
 import contentUpdateAnimation from '../assets/lottifies/announcement.json'; // Replace with actual path
+import task from "../assets/images/task_inactive.png";
+
 
 
 const Home = () => {
@@ -302,6 +304,7 @@ const Home = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
+    { link: "/task-management", icon: task, label: "Task Management" },
   ];
 
   const handleLogout = () => {

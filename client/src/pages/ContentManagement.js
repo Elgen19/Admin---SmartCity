@@ -23,6 +23,8 @@ import sendIcon from "../assets/images/send.png";
 import Lottie from "lottie-react";
 import animationData from "../assets/lottifies/content_management.json";
 import HeaderCards from "../components/HeaderCards.js";
+import task from "../assets/images/task_inactive.png";
+
 
 const ContentManagement = () => {
   const [activeLink, setActiveLink] = useState("/content-management");
@@ -262,6 +264,9 @@ const ContentManagement = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
+    { link: "/task-management", icon: task, label: "Task Management" },
+
+    
   ];
 
   const handleLogout = () => {
