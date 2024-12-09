@@ -31,7 +31,7 @@ const Profile = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
-    { link: "/task-management", icon: task, label: "Task Management" },
+    //{ link: "/task-management", icon: task, label: "Task Management" },
 
   ];
 
