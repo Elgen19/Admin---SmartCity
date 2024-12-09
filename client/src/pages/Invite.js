@@ -25,7 +25,7 @@ function Invite() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userToken = await user.getIdToken();
-        await checkUserAccess(user.uid); // Check user access
+        // await checkUserAccess(user.uid); // Check user access
         setToken(userToken);
       } else {
         // User is not signed in; redirect to home
@@ -77,7 +77,7 @@ function Invite() {
           withCredentials: true, 
         }
       );
-      
+    
 
       // Log the admin activity after sending the invite
       const auth = getAuth();

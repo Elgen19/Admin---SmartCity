@@ -29,6 +29,8 @@ function SignUp() {
   const BASE_URL = "https://smartcity-backend.vercel.app";
 
 
+
+
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {

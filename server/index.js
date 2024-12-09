@@ -17,8 +17,8 @@ const issueAndSuggestionRoutes = require('./routes/issueAndSuggestionClassifierR
 const app = express();
 
 // CORS configuration
-// const allowedOrigins = ['https://admin-smart-city.vercel.app']; // Allow your frontend's URL
-const allowedOrigins = ['http://localhost:3000']; // Allow your frontend's URL
+const allowedOrigins = ['https://admin-smart-city.vercel.app']; // Allow your frontend's URL
+// const allowedOrigins = ['http://localhost:3000']; // Allow your frontend's URL
 
 app.use(cors({
   origin: function (origin, callback) {

@@ -40,6 +40,7 @@ const sendInvite = async (req, res) => {
 
     // Generate the signup link
     const signupLink = `https://admin-smart-city.vercel.app/signup?token=${token}`;
+    // const signupLink = `http://localhost:3000/signup?token=${token}`;
 
     // Build the email content directly (no Handlebars needed)
     const emailHTML = `

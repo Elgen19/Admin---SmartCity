@@ -38,16 +38,16 @@ const SignIn = () => {
     </div>
   );
 
-  // const checkAdminApproval = async (uid) => {
-  //   const adminRef = ref(db, `admins/${uid}`);
-  //   const snapshot = await get(adminRef);
-  //   if (snapshot.exists()) {
-  //     const adminData = snapshot.val();
-  //     return adminData.isApproved === true; // Check if admin is approved
-  //   } else {
-  //     return false; // If admin data doesn't exist or isApproved is false
-  //   }
-  // };
+  const checkAdminApproval = async (uid) => {
+    const adminRef = ref(db, `admins/${uid}`);
+    const snapshot = await get(adminRef);
+    if (snapshot.exists()) {
+      const adminData = snapshot.val();
+      return adminData.isApproved === true; // Check if admin is approved
+    } else {
+      return false; // If admin data doesn't exist or isApproved is false
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,15 +71,15 @@ const SignIn = () => {
       }
 
       // 2. Check if the admin is approved
-      // const isAdminApproved = await checkAdminApproval(user.uid);
-      // if (!isAdminApproved) {
-      //   setModalMessage(
-      //     "Your admin request is still pending approval. Please contact the admin."
-      //   );
-      //   setShowModal(true); // Show modal with approval message
-      //   auth.signOut();
-      //   return;
-      // }
+      const isAdminApproved = await checkAdminApproval(user.uid);
+      if (!isAdminApproved) {
+        setModalMessage(
+          "Your admin request is still pending approval. Please contact the admin."
+        );
+        setShowModal(true); // Show modal with approval message
+        auth.signOut();
+        return;
+      }
 
       // 3. If both email is verified and admin is approved, navigate to profile
       navigate("/home");

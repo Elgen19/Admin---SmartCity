@@ -1,7 +1,7 @@
 const firebaseAdmin = require('firebase-admin');
 
 const authenticate = async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Assuming Bearer token
+    const token = req.headers.authorization?.split(' ')[1]; 
 
     if (!token) {
         return res.status(401).json({ message: 'Unauthorized' });
