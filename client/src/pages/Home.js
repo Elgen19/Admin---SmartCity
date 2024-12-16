@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, get, child, onValue } from "firebase/database";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import axios from "axios";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import {
   BarChart,
@@ -25,17 +24,17 @@ import feedback from "../assets/images/feedback.png";
 import content from "../assets/images/content.png";
 import home from "../assets/images/home.png";
 import notificationBell from "../assets/images/notification-bell.png";
-import activeHome from "../assets/images/active_home.png"
-import Lottie from 'lottie-react'
-import userAnimation from '../assets/lottifies/users.json'; // Replace with actual path
-import feedbackAnimation from '../assets/lottifies/feeback.json'; // Replace with actual path
-import contentUpdateAnimation from '../assets/lottifies/announcement.json'; // Replace with actual path
-import task from "../assets/images/task_inactive.png";
-
-
+import activeHome from "../assets/images/active_home.png";
+import Lottie from "lottie-react";
+import userAnimation from "../assets/lottifies/users.json"; // Replace with actual path
+import feedbackAnimation from "../assets/lottifies/feeback.json"; // Replace with actual path
+import contentUpdateAnimation from "../assets/lottifies/announcement.json"; // Replace with actual path
+import menu from "../assets/images/menu.svg";
+import notificationsWhite from "../assets/images/notifications_white.png";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
 
 const Home = () => {
-  
   const [feedbackSummary, setFeedbackSummary] = useState({});
   const [activeLink, setActiveLink] = useState("/home");
   const [adminName, setAdminName] = useState("");
@@ -45,7 +44,9 @@ const Home = () => {
   const [contentUpdates, setContentUpdates] = useState(0);
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [selectedReport, setSelectedReport] = useState("All");
-  const [selectedReportForAnalysis, setSelectedReportAnalysis] = useState("Application Rating Overview");
+  const [selectedReportForAnalysis, setSelectedReportAnalysis] = useState(
+    "Application Rating Overview"
+  );
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("1 Minute");
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -56,9 +57,14 @@ const Home = () => {
 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const database = getDatabase()
+  const database = getDatabase();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    // Fetch contents targeted to admins from Firebase
+  const handleMenuToggle = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
+  // Fetch contents targeted to admins from Firebase
   useEffect(() => {
     const contentsRef = ref(database, "Contents");
 
@@ -89,7 +95,6 @@ const Home = () => {
     setSelectedContent(null);
   };
 
-
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -108,10 +113,6 @@ const Home = () => {
     navigate("/notification"); // Navigate to /notification when the bell is clicked
   };
 
-
-
-
-
   const fetchAdminName = async (uid) => {
     const db = getDatabase();
     const adminRef = ref(db, `admins/${uid}`);
@@ -126,35 +127,41 @@ const Home = () => {
     }
   };
 
-
-  
-
-
   const fetchAnalysis = async (reportType) => {
     setLoading(true);
     setError(null);
 
     try {
-      if (reportType === 'Bug Analysis Report') {
+      if (reportType === "Bug Analysis Report") {
         // Fetch bug analysis report
         const response = await axios.get(`${BASE_URL}/api/ai/analyze-feedback`); // Endpoint for analysis
 
         // Remove "Summary:" from the beginning of the response string
-        const cleanAnalysis = response.data.analysis.replace(/^Summary:\s*/, '');
+        const cleanAnalysis = response.data.analysis.replace(
+          /^Summary:\s*/,
+          ""
+        );
         setAnalysis(cleanAnalysis); // Set the cleaned analysis result
-
-      } else if (reportType === 'Application Rating Overview') {
+      } else if (reportType === "Application Rating Overview") {
         // Fetch rating analysis report
         const response = await axios.get(`${BASE_URL}/api/rating/get-ratings`); // Endpoint for ratings
         const { highestRating, lowestRating, averageRating } = response.data;
 
         // Log the returned values for debugging
-        console.log("Ratings data:", { highestRating, lowestRating, averageRating });
+        console.log("Ratings data:", {
+          highestRating,
+          lowestRating,
+          averageRating,
+        });
 
         // Ensure that averageRating is a number before calling toFixed()
-        const average = typeof averageRating === 'string' ? parseFloat(averageRating).toFixed(2) : averageRating.toFixed(2);
-        const highest = typeof highestRating === 'number' ? highestRating : 'N/A';
-        const lowest = typeof lowestRating === 'number' ? lowestRating : 'N/A';
+        const average =
+          typeof averageRating === "string"
+            ? parseFloat(averageRating).toFixed(2)
+            : averageRating.toFixed(2);
+        const highest =
+          typeof highestRating === "number" ? highestRating : "N/A";
+        const lowest = typeof lowestRating === "number" ? lowestRating : "N/A";
 
         const getRatingClass = (rating) => {
           if (rating > 3) {
@@ -165,7 +172,7 @@ const Home = () => {
             return "text-red-500 font-bold"; // Red for ratings less than 3
           }
         };
-        
+
         const ratingAnalysis = (
           <div>
             <p className={getRatingClass(highest)}>
@@ -180,8 +187,6 @@ const Home = () => {
           </div>
         );
 
-       
-        
         setAnalysis(ratingAnalysis); // Set the ratings analysis result
       }
     } catch (error) {
@@ -196,10 +201,6 @@ const Home = () => {
   useEffect(() => {
     fetchAnalysis(selectedReportForAnalysis); // Fetch based on the current selected report
   }, [selectedReportForAnalysis]); // Depend on selectedReportForAnalysis to refetch when it changes
-
-  
-  
-  
 
   const fetchFeedbackSummary = async () => {
     const db = getDatabase();
@@ -285,13 +286,13 @@ const Home = () => {
   useEffect(() => {
     const hours = new Date().getHours();
     let greetingMessage = "Good morning";
-  
+
     if (hours >= 12 && hours < 18) {
       greetingMessage = "Good afternoon";
     } else if (hours >= 18 || hours < 5) {
       greetingMessage = "Good evening";
     }
-  
+
     setGreeting({
       message: greetingMessage,
       name: adminName.split(" ")[0], // Get the first name
@@ -304,7 +305,7 @@ const Home = () => {
     { link: "/user-management", icon: users, label: "User Management" },
     { link: "/feedback-management", icon: feedback, label: "Feedbacks" },
     { link: "/content-management", icon: content, label: "Contents" },
-   // { link: "/task-management", icon: task, label: "Task Management" },
+    // { link: "/task-management", icon: task, label: "Task Management" },
   ];
 
   const handleLogout = () => {
@@ -321,348 +322,738 @@ const Home = () => {
       }, {});
   };
 
-  
   return (
-    <div className="flex h-screen bg-white font-nunito">
-     {/* Sidebar */}
-<div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
-    <img
-        className="w-[200px] h-[200px] mx-auto mb-10"
-        src={adminImage} // Updated with your image path
-        alt="Company Logo"
-    />
-    <nav className="space-y-6">
-        {navLinks.map(({ link, icon, label }) => (
-            <a
+    <div>
+      {/* Desktop devices */}
+      <div className="hidden lg:flex h-screen bg-white font-nunito">
+        {/* Sidebar */}
+        <div className="w-1/6 bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] p-6 flex flex-col overflow-hidden">
+          <img
+            className="w-[200px] h-[200px] mx-auto mb-10"
+            src={adminImage} // Updated with your image path
+            alt="Company Logo"
+          />
+          <nav className="space-y-6">
+            {navLinks.map(({ link, icon, label }) => (
+              <a
                 key={link}
                 href={link}
                 onClick={() => setActiveLink(link)}
                 className={`flex items-center text-xl transition ${
-                    activeLink === link
-                        ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3" // Active link color
-                        : "text-white hover:text-[#09d1e3]"
+                  activeLink === link
+                    ? "text-[#09d1e3] font-bold border-l-4 border-[#09d1e3] pl-3" // Active link color
+                    : "text-white hover:text-[#09d1e3]"
                 }`}
                 style={{ textDecoration: "none" }}
-            >
+              >
                 <img
-                    className="w-8 h-8 mr-3 transition"
-                    src={activeLink === link ? activeHome: icon} // Use active icon if link is active
-                    alt={`${label} Icon`}
+                  className="w-8 h-8 mr-3 transition"
+                  src={activeLink === link ? activeHome : icon} // Use active icon if link is active
+                  alt={`${label} Icon`}
                 />
                 {label}
-            </a>
-        ))}
-    </nav>
-    <div className="mt-auto">
-        <button
-            onClick={handleLogout}
-            className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
+              </a>
+            ))}
+          </nav>
+          <div className="mt-auto">
+            <button
+              onClick={handleLogout}
+              className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg mt-4 hover:bg-red-500 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+          {/* Greeting and Notification Row */}
+          <div className="flex items-center justify-between w-full mb-6">
+            <label className="text-[28px] font-bold text-[#141d70]">
+              <span className="font-extrabold text-[#09d1e3]">
+                {greeting.message},
+              </span>{" "}
+              <span className="font-normal">{greeting.name}</span>!
+            </label>
+            <button
+              className="ml-4 bg-transparent p-0 border-none"
+              onClick={handleNotificationClick}
+            >
+              <img
+                src={notificationBell}
+                alt="Notification Bell"
+                className="w-8 h-8"
+              />
+            </button>
+          </div>
+
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* Users Card */}
+            <div className="bg-[#1976d2] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+              {/* Lottie Animation */}
+              <div className="w-16 h-16 mr-4">
+                <Lottie
+                  animationData={userAnimation}
+                  loop={true}
+                  className="w-full h-full"
+                />
+              </div>
+              <div>
+                <p className="text-white text-xl font-bold">Total Users</p>
+                <p className="text-white text-5xl font-semibold">
+                  {userCount}
+                </p>{" "}
+                {/* Enlarged number */}
+              </div>
+            </div>
+
+            {/* Feedback Card */}
+            <div className="bg-[#0288d1] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+              {/* Lottie Animation */}
+              <div className="w-16 h-16 mr-4">
+                <Lottie
+                  animationData={feedbackAnimation}
+                  loop={true}
+                  className="w-full h-full"
+                />
+              </div>
+              <div>
+                <p className="text-white text-l font-bold">Feedback</p>
+                <p className="text-white text-xl font-semibold">
+                  {feedbackCount}
+                </p>{" "}
+                {/* Enlarged number */}
+              </div>
+            </div>
+
+            {/* Content Updates Card */}
+            <div className="bg-[#03a9f4] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
+              {/* Lottie Animation */}
+              <div className="w-16 h-16 mr-4">
+                <Lottie
+                  animationData={contentUpdateAnimation}
+                  loop={true}
+                  className="w-full h-full"
+                />
+              </div>
+              <div>
+                <p className="text-white text-lg font-bold">Content Updates</p>
+                <p className="text-white text-xl font-semibold">
+                  {contentUpdates}
+                </p>{" "}
+                {/* Enlarged number */}
+              </div>
+            </div>
+          </div>
+
+          {/* Dropdowns and Charts Section */}
+          <div className="grid grid-cols-2 gap-4 mb-6 mt-3">
+            {/* Dropdown for Time Frame Analysis */}
+            <div className="relative w-full max-w-xs">
+              <label className="mb-1 text-sm font-medium text-[#141d70]">
+                Select Time Frame for Active Users
+              </label>
+              <select
+                className="p-2 border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedTimeFrame}
+                onChange={(e) => setSelectedTimeFrame(e.target.value)}
+              >
+                <option value="1 Minute">Last 1 Minute</option>
+                <option value="5 Minutes">Last 5 Minutes</option>
+                <option value="10 Minutes">Last 10 Minutes</option>
+              </select>
+            </div>
+
+            {/* Dropdown for Feedback Summary Report Type */}
+            <div className="relative w-full max-w-xs">
+              <label className="mb-1 text-sm font-medium text-[#141d70]">
+                Select Report Type for Feedback Summary
+              </label>
+              <select
+                className="p-2 border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedReport}
+                onChange={(e) => setSelectedReport(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="General Feedback">General Feedback</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Line Chart for Active Users */}
+            <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
+              <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">
+                Active Users
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={activeUsersData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#09d1e3"
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Bar Chart for Feedback Summary */}
+            <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
+              <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">
+                Feedback Summary
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={Object.entries(filterFeedbackSummary()).map(
+                    ([type, count]) => ({ type, count })
+                  )}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="type" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" fill="#09d1e3" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Admin Content Table Section */}
+          <div className="flex h-screen bg-white font-nunito px-0">
+            <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+              {/* Admin Content Table Section */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4 text-[#09d1e3]">
+                  Admin Announcements and Updates
+                </h2>
+                <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+                  <thead className="bg-[#0e1550] text-white">
+                    <tr>
+                      <th className="py-2 px-4">Title</th>
+                      <th className="py-2 px-4">Content Type</th>
+                      <th className="py-2 px-4">Timestamp</th>
+                      <th className="py-2 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminContents.length > 0 ? (
+                      adminContents.map((content) => (
+                        <tr key={content.id} className="border-b">
+                          <td className="py-2 px-4">{content.title}</td>
+                          <td className="py-2 px-4">{content.contentType}</td>
+                          <td className="py-2 px-4">
+                            {new Date(content.timestamp).toLocaleString()}
+                          </td>
+                          <td className="py-2 px-4">
+                            <button
+                              className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                              onClick={() => handleViewClick(content)}
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center py-4">
+                          No announcements or updates for admins.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Admin Content Table Section */}
+              {isDialogOpen && selectedContent && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 p-4">
+                  <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-2xl relative max-h-[80vh] overflow-y-auto">
+                    {/* Dialog Title */}
+                    <h2 className="text-xl font-semibold mb-4 text-[#09d1e3] text-center">
+                      Content Details
+                    </h2>
+
+                    {/* Content Details */}
+                    <div className="grid grid-cols-1 gap-4 text-sm">
+                      {/* Title */}
+                      <div className="flex flex-col items-start">
+                        <div className="flex items-center">
+                          <i className="fas fa-heading mr-2 text-gray-700"></i>
+                          <p className="font-semibold text-gray-700">Title:</p>
+                        </div>
+                        <p className="my-0  text-gray-600">
+                          {selectedContent.title}
+                        </p>
+                      </div>
+
+                      {/* Message */}
+                      <div className="flex flex-col items-start col-span-2">
+                        <div className="flex items-center">
+                          <i className="fas fa-comment mr-2 text-gray-700"></i>
+                          <p className="font-semibold text-gray-700">
+                            Message:
+                          </p>
+                        </div>
+                        <p className="my-0 text-gray-600">
+                          {selectedContent.message}
+                        </p>
+                      </div>
+
+                      {/* Content Type, Channel, Audience */}
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Content Type */}
+                        <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+                          <div className="flex items-center">
+                            <i className="fas fa-tag mr-2 text-gray-700"></i>
+                            <p className="font-semibold text-gray-700">
+                              Content Type
+                            </p>
+                          </div>
+                          <p className="text-gray-600">
+                            {selectedContent.contentType}
+                          </p>
+                        </div>
+
+                        {/* Channel */}
+                        <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+                          <div className="flex items-center">
+                            <i className="fas fa-bullhorn mr-2 text-gray-700"></i>
+                            <p className="font-semibold text-gray-700">
+                              Channel
+                            </p>
+                          </div>
+                          <p className="text-gray-600">
+                            {selectedContent.channel}
+                          </p>
+                        </div>
+
+                        {/* Audience */}
+                        <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
+                          <div className="flex items-center">
+                            <i className="fas fa-users mr-2 text-gray-700"></i>
+                            <p className="font-semibold text-gray-700">
+                              Audience
+                            </p>
+                          </div>
+                          <p className="text-gray-600">
+                            {selectedContent.audience}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t-2 border-gray-200 my-4"></div>
+
+                    {/* User Info Section */}
+                    <div className="space-y-2 text-sm">
+                      {/* Card Wrapper */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        {/* Grid Layout for 2 columns */}
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* User Name */}
+                          <div className="flex flex-col items-start">
+                            <div className="flex items-center">
+                              <i className="fas fa-user mr-2 text-gray-700"></i>
+                              <p className="font-semibold text-gray-700">
+                                User Name
+                              </p>
+                            </div>
+                            <p className="text-gray-600">
+                              {selectedContent.userName}
+                            </p>
+                          </div>
+
+                          {/* User Email */}
+                          <div className="flex flex-col items-start">
+                            <div className="flex items-center">
+                              <i className="fas fa-envelope mr-2 text-gray-700"></i>
+                              <p className="font-semibold text-gray-700">
+                                User Email
+                              </p>
+                            </div>
+                            <p className="text-gray-600">
+                              {selectedContent.userEmail}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Close Button */}
+                    <div className="mt-6 text-center">
+                      <button
+                        className="w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition ease-in-out duration-150"
+                        onClick={handleCloseDialog}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Layout (visible on small screens) */}
+      <div className="lg:hidden flex flex-col h-screen bg-white font-nunito">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between p-4 bg-[#0e1550] text-white">
+          {/* Menu Icon */}
+          <button onClick={handleMenuToggle} className="bg-transparent">
+            <img
+              src={menu} // Replace with your menu icon path
+              alt="Menu Icon"
+              className="w-8 h-8"
+            />
+          </button>
+
+          {/* Greeting */}
+          <h1 className="text-xl font-bold text-center">
+            <span className="text-[#09d1e3]">{greeting.message},</span>{" "}
+            {greeting.name}!
+          </h1>
+
+          {/* Notification Icon */}
+          <button className="bg-transparent" onClick={handleNotificationClick}>
+            <img
+              src={notificationsWhite} // Replace with your notification icon path
+              alt="Notifications"
+              className="w-8 h-8"
+            />
+          </button>
+        </div>
+
+        {/* Dropdown Menu */}
+        <div
+          className={`fixed top-0 left-0 w-3/4 h-full bg-gradient-to-b from-[#0e1550] to-[#1f2fb6] transform ${
+            menuOpen ? "translate-x-0 z-50" : "-translate-x-full"
+          } transition-transform duration-300`}
         >
-            Logout
-        </button>
-    </div>
-</div>
+          <div className="flex flex-col h-full p-6">
+            {/* Logo Section */}
+            <div className="flex justify-center mb-8">
+              <img
+                src={adminImage}
+                alt="Admin Logo"
+                className="w-48 h-48 object-contain"
+              />
+            </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-        {/* Greeting and Notification Row */}
-        <div className="flex items-center justify-between w-full mb-6">
-    <label className="text-[28px] font-bold text-[#141d70]">
-      <span className="font-extrabold text-[#09d1e3]">{greeting.message},</span> <span className="font-normal">{greeting.name}</span>!
-    </label>
-    <button className="ml-4 bg-transparent p-0 border-none" onClick={handleNotificationClick}>
-      <img src={notificationBell} alt="Notification Bell" className="w-8 h-8" />
-    </button>
-  </div>
+            {/* Navigation Links */}
+            <nav className="flex-grow space-y-4 mb-6">
+              {navLinks.map(({ link, icon, label }) => (
+                <a
+                  key={link}
+                  href={link}
+                  className={`flex items-center text-lg transition duration-300 ${
+                    activeLink === link
+                      ? "text-[#09d1e3] font-bold" // Active link style
+                      : "text-white hover:text-[#09d1e3]" // Hover effect
+                  }`}
+                  style={{ textDecoration: "none" }} // Remove underline
+                >
+                  <img
+                    src={activeLink === link ? activeHome : icon} // Active icon if link is active
+                    alt={`${label} Icon`}
+                    className={`w-6 h-6 mr-3 ${
+                      activeLink === link ? "text-[#09d1e3]" : ""
+                    }`}
+                  />
+                  {label}
+                </a>
+              ))}
+            </nav>
 
-      
+            {/* Logout Button */}
+            <div className="mt-auto">
+              <button
+                onClick={handleLogout}
+                className="w-full h-12 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 transition mb-8"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
 
-{/* Statistics Cards */}
-<div className="grid grid-cols-3 gap-4 mb-4">
-  {/* Users Card */}
-  <div className="bg-[#1976d2] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
-    {/* Lottie Animation */}
-    <div className="w-16 h-16 mr-4">
-      <Lottie animationData={userAnimation} loop={true} className="w-full h-full" />
-    </div>
-    <div>
-      <p className="text-white text-xl font-bold">Total Users</p>
-      <p className="text-white text-5xl font-semibold">{userCount}</p> {/* Enlarged number */}
-    </div>
-  </div>
+        {/* Backdrop */}
+        {menuOpen && (
+          <div className="fixed inset-0" onClick={handleMenuToggle}></div>
+        )}
 
-  {/* Feedback Card */}
-  <div className="bg-[#0288d1] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
-    {/* Lottie Animation */}
-    <div className="w-16 h-16 mr-4">
-      <Lottie animationData={feedbackAnimation} loop={true} className="w-full h-full" />
-    </div>
-    <div>
-      <p className="text-white text-l font-bold">Feedback</p>
-      <p className="text-white text-xl font-semibold">{feedbackCount}</p> {/* Enlarged number */}
-    </div>
-  </div>
+        {/* Label for Application Statistics */}
+        <div className="px-4 pt-4 pb-2 flex items-center">
+          {/* Font Awesome Icon */}
+          <i className="fas fa-chart-line text-[#0e1550] mr-2 pr-2"></i>{" "}
+          {/* You can replace 'fa-chart-line' with any other icon */}
+          <h2 className="text-md font-semibold text-[#0e1550] m-0">
+            Application Statistics
+          </h2>
+        </div>
 
-  {/* Content Updates Card */}
-  <div className="bg-[#03a9f4] rounded-lg p-4 shadow-md transform transition duration-300 hover:scale-105 flex items-center">
-    {/* Lottie Animation */}
-    <div className="w-16 h-16 mr-4">
-      <Lottie animationData={contentUpdateAnimation} loop={true} className="w-full h-full" />
-    </div>
-    <div>
-      <p className="text-white text-lg font-bold">Content Updates</p>
-      <p className="text-white text-xl font-semibold">{contentUpdates}</p> {/* Enlarged number */}
-    </div>
-  </div>
-</div>
+        {/* Scrollable Row */}
+        <div
+          className="flex overflow-x-auto space-x-4 px-4 min-h-[200px]" // Add min height
+          style={{
+            scrollBehavior: "smooth",
+            WebkitOverflowScrolling: "touch",
+            "-ms-overflow-style": "none" /* IE and Edge */,
+            "scrollbar-width": "none" /* Firefox */,
+          }}
+        >
+          <div className="flex-shrink-0 bg-gradient-to-r from-[#111a62] to-[#1a2e88] rounded-lg p-6 shadow-md flex items-center w-80 h-36">
+            <div className="w-32 h-32 mr-4">
+              <Lottie
+                animationData={userAnimation}
+                loop={true}
+                className="w-full h-full"
+              />
+            </div>
+            <div>
+              <p className="text-white text-xl font-bold  m-0 pb-2">
+                Total Users
+              </p>
+              <p className="text-white text-[40px] font-semibold  m-0 text-[#09bfd0]">
+                {userCount}
+              </p>
+            </div>
+          </div>
 
+          <div className="flex-shrink-0 bg-gradient-to-r from-[#111a62] to-[#1a2e88] rounded-lg p-6 shadow-md flex items-center w-80 h-36">
+            <div className="w-32 h-32 mr-4">
+              <Lottie
+                animationData={feedbackAnimation}
+                loop={true}
+                className="w-full h-full"
+              />
+            </div>
+            <div>
+              <p className="text-white text-xl font-bold  m-0 pb-2">Feedback</p>
+              <p className="text-white text-[40px] font-semibold  m-0 text-[#09bfd0]">
+                {feedbackCount}
+              </p>
+            </div>
+          </div>
 
+          <div className="flex-shrink-0 bg-gradient-to-r from-[#111a62] to-[#1a2e88] rounded-lg p-6 shadow-md flex items-center w-80 h-36">
+            <div className="w-32 h-32 mr-4">
+              <Lottie
+                animationData={contentUpdateAnimation}
+                loop={true}
+                className="w-full h-full"
+              />
+            </div>
+            <div>
+              <p className="text-white text-xl font-bold  m-0 pb-2">
+                Content Updates
+              </p>
+              <p className="text-white text-[40px] font-semibold  m-0 text-[#09bfd0]">
+                {contentUpdates}
+              </p>
+            </div>
+          </div>
+        </div>
 
-
+        {/* Label for Dropdowns and Charts Section */}
+        <div className="px-4 pt-4 flex items-center">
+          {/* Font Awesome Icon */}
+          <i className="fas fa-chart-pie text-[#0e1550] mr-2 pr-2"></i>
+          {/* Section Title */}
+          <h2 className="text-md font-semibold text-[#0e1550] m-0">
+            Analytics Overview
+          </h2>
+        </div>
 
         {/* Dropdowns and Charts Section */}
-        <div className="grid grid-cols-2 gap-4 mb-6 mt-3">
-          {/* Dropdown for Time Frame Analysis */}
-          <div className="relative w-full max-w-xs">
-            <label className="mb-1 text-sm font-medium text-[#141d70]">
-              Select Time Frame for Active Users
-            </label>
-            <select
-              className="p-2 border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedTimeFrame}
-              onChange={(e) => setSelectedTimeFrame(e.target.value)}
-            >
-              <option value="1 Minute">Last 1 Minute</option>
-              <option value="5 Minutes">Last 5 Minutes</option>
-              <option value="10 Minutes">Last 10 Minutes</option>
-            </select>
-          </div>
-
-          {/* Dropdown for Feedback Summary Report Type */}
-          <div className="relative w-full max-w-xs">
-            <label className="mb-1 text-sm font-medium text-[#141d70]">
-              Select Report Type for Feedback Summary
-            </label>
-            <select
-              className="p-2 border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedReport}
-              onChange={(e) => setSelectedReport(e.target.value)}
-            >
-              <option value="All">All</option>
-              <option value="Bug Report">Bug Report</option>
-              <option value="Feature Request">Feature Request</option>
-              <option value="General Feedback">General Feedback</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Line Chart for Active Users */}
-          <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">Active Users</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={activeUsersData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#09d1e3"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Bar Chart for Feedback Summary */}
-          <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">Feedback Summary</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={Object.entries(filterFeedbackSummary()).map(
-                  ([type, count]) => ({ type, count })
-                )}
+        <div className="space-y-6">
+          {/* Time Frame Analysis Section */}
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            {/* Time Frame for Active Users */}
+            <div className="mb-4 ">
+              <label className="mb-1 text-sm font-medium text-[#141d70]">
+                Select Time Frame for Active Users
+              </label>
+              <select
+                className="p-2 w-full border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedTimeFrame}
+                onChange={(e) => setSelectedTimeFrame(e.target.value)}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="type" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#09d1e3" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-
-
-
-
-
-
-
- {/* Admin Content Table Section */}
- <div className="flex h-screen bg-white font-nunito px-0">
-      <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-        {/* Admin Content Table Section */}
-        <div >
-          <h2 className="text-2xl font-bold mb-4 text-[#09d1e3]">Admin Announcements and Updates</h2>
-          <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-[#0e1550] text-white">
-              <tr>
-                <th className="py-2 px-4">Title</th>
-                <th className="py-2 px-4">Content Type</th>
-                <th className="py-2 px-4">Timestamp</th>
-                <th className="py-2 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {adminContents.length > 0 ? (
-                adminContents.map((content) => (
-                  <tr key={content.id} className="border-b">
-                    <td className="py-2 px-4">{content.title}</td>
-                    <td className="py-2 px-4">{content.contentType}</td>
-                    <td className="py-2 px-4">{new Date(content.timestamp).toLocaleString()}</td>
-                    <td className="py-2 px-4">
-                      <button
-                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-                        onClick={() => handleViewClick(content)}
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center py-4">No announcements or updates for admins.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
- {/* Admin Content Table Section */}
- {isDialogOpen && selectedContent && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 p-4">
-    <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-2xl relative max-h-[80vh] overflow-y-auto">
-      {/* Dialog Title */}
-      <h2 className="text-xl font-semibold mb-4 text-[#09d1e3] text-center">
-        Content Details
-      </h2>
-
-      {/* Content Details */}
-      <div className="grid grid-cols-1 gap-4 text-sm">
-        {/* Title */}
-        <div className="flex flex-col items-start">
-          <div className="flex items-center">
-            <i className="fas fa-heading mr-2 text-gray-700"></i>
-            <p className="font-semibold text-gray-700">Title:</p>
-          </div>
-          <p className="my-0  text-gray-600">{selectedContent.title}</p>
-        </div>
-
-        {/* Message */}
-        <div className="flex flex-col items-start col-span-2">
-          <div className="flex items-center">
-            <i className="fas fa-comment mr-2 text-gray-700"></i>
-            <p className="font-semibold text-gray-700">Message:</p>
-          </div>
-          <p className="my-0 text-gray-600">{selectedContent.message}</p>
-        </div>
-
-        {/* Content Type, Channel, Audience */}
-        <div className="grid grid-cols-3 gap-4">
-          {/* Content Type */}
-          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <i className="fas fa-tag mr-2 text-gray-700"></i>
-              <p className="font-semibold text-gray-700">Content Type</p>
+                <option value="1 Minute">Last 1 Minute</option>
+                <option value="5 Minutes">Last 5 Minutes</option>
+                <option value="10 Minutes">Last 10 Minutes</option>
+              </select>
             </div>
-            <p className="text-gray-600">{selectedContent.contentType}</p>
-          </div>
 
-          {/* Channel */}
-          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <i className="fas fa-bullhorn mr-2 text-gray-700"></i>
-              <p className="font-semibold text-gray-700">Channel</p>
+            {/* Chart for Time Frame */}
+            <div className="bg-gradient-to-r from-[#111a62] to-[#1a2e88] p-4 rounded-lg shadow-md">
+              <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">
+                Active Users
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={activeUsersData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+                  <XAxis dataKey="time" stroke="#e6e6e6" />
+                  <YAxis stroke="#e6e6e6" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "#2c3e50", color: "#fff" }}
+                  />
+                  <Legend wrapperStyle={{ color: "#e6e6e6" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#09d1e3"
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <p className="text-gray-600">{selectedContent.channel}</p>
           </div>
 
-          {/* Audience */}
-          <div className="flex flex-col items-start bg-yellow-100 p-3 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <i className="fas fa-users mr-2 text-gray-700"></i>
-              <p className="font-semibold text-gray-700">Audience</p>
+          {/* Feedback Summary Section */}
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            {/* Feedback Summary Dropdown */}
+            <div className="mb-4">
+              <label className="mb-1 text-sm font-medium text-[#141d70]">
+                Select Report Type for Feedback Summary
+              </label>
+              <select
+                className="p-2 w-full border rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedReport}
+                onChange={(e) => setSelectedReport(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="General Feedback">General Feedback</option>
+              </select>
             </div>
-            <p className="text-gray-600">{selectedContent.audience}</p>
+
+            {/* Feedback Summary Chart */}
+            <div className="bg-gradient-to-r from-[#111a62] to-[#1a2e88] p-4 rounded-lg shadow-md">
+              <h2 className="text-lg font-bold mb-4 text-[#09d1e3]">
+                Feedback Summary
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={Object.entries(filterFeedbackSummary()).map(
+                    ([type, count]) => ({ type, count })
+                  )}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+                  <XAxis dataKey="type" stroke="#e6e6e6" />
+                  <YAxis stroke="#e6e6e6" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "#2c3e50", color: "#fff" }}
+                  />
+                  <Legend wrapperStyle={{ color: "#e6e6e6" }} />
+                  <Bar dataKey="count" fill="#09d1e3" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Divider */}
-      <div className="border-t-2 border-gray-200 my-4"></div>
+        {/* Admin Content Table Dialog */}
+        {isDialogOpen && selectedContent && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div className="bg-white rounded-lg p-4 w-full max-w-sm shadow-lg relative max-h-[90vh] overflow-y-auto">
+              {/* Dialog Header */}
+              <div className="flex justify-between items-center ">
+                <h2 className="text-xl  text-[#09d1e3]">Content Details</h2>
+                <button
+                  className="text-red-500 hover:text-red-700 transition bg-transparent px-4 py-2 text-lg rounded-md"
+                  onClick={handleCloseDialog}
+                >
+                  <i className="fas fa-times text-2xl"></i>
+                </button>
+              </div>
 
-{/* User Info Section */}
-<div className="space-y-2 text-sm">
-  {/* Card Wrapper */}
-  <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-    {/* Grid Layout for 2 columns */}
-    <div className="grid grid-cols-2 gap-4">
-      {/* User Name */}
-      <div className="flex flex-col items-start">
-        <div className="flex items-center">
-          <i className="fas fa-user mr-2 text-gray-700"></i>
-          <p className="font-semibold text-gray-700">User Name</p>
-        </div>
-        <p className="text-gray-600">{selectedContent.userName}</p>
-      </div>
+              {/* Compact Content Details */}
+              <div className="space-y-4 text-sm">
+                {/* Title - Styled as an email subject */}
+                <div>
+                  <p className="text-[#0e1550] font-semibold text-lg">
+                    {selectedContent.title}
+                  </p>
+                </div>
 
-      {/* User Email */}
-      <div className="flex flex-col items-start">
-        <div className="flex items-center">
-          <i className="fas fa-envelope mr-2 text-gray-700"></i>
-          <p className="font-semibold text-gray-700">User Email</p>
-        </div>
-        <p className="text-gray-600">{selectedContent.userEmail}</p>
-      </div>
-    </div>
-  </div>
-</div>
+                {/* Message - Styled as the email body */}
+                <div>
+                  <p className="text-gray-700 mb-0">
+                    {selectedContent.message}
+                  </p>
+                </div>
 
+                {/* Horizontal Section: Content Type, Channel, Audience */}
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Content Type */}
+                  <div className="bg-gradient-to-r from-[#111a62] to-[#1a2e88] p-4 rounded-lg shadow">
+                    <p className="text-[#09d1e3] font-semibold text-sm mb-1">
+                      Content Type
+                    </p>
+                    <p className="text-white text-xs">
+                      {selectedContent.contentType}
+                    </p>
+                  </div>
+                  {/* Channel */}
+                  <div className="bg-gradient-to-r from-[#111a62] to-[#1a2e88] p-4 rounded-lg shadow">
+                    <p className="text-[#09d1e3] font-semibold text-sm mb-1">
+                      Channel
+                    </p>
+                    <p className="text-white text-xs">
+                      {selectedContent.channel}
+                    </p>
+                  </div>
+                  {/* Audience */}
+                  <div className="bg-gradient-to-r from-[#111a62] to-[#1a2e88] p-4 rounded-lg shadow">
+                    <p className="text-[#09d1e3] font-semibold text-sm mb-1">
+                      Audience
+                    </p>
+                    <p className="text-white text-xs">
+                      {selectedContent.audience}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
+              {/* Divider */}
+              <div className="border-t my-4"></div>
 
-      {/* Close Button */}
-      <div className="mt-6 text-center">
-        <button
-          className="w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition ease-in-out duration-150"
-          onClick={handleCloseDialog}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              {/* User Info Section */}
+              <div className="text-sm mt-8">
+                <div className="mb-4">
+                  {/* Username */}
+                  <p className="font-semibold text-gray-900 mb-0 mt-2">
+                    By: {selectedContent.userName}
+                  </p>
 
-
-
-
-      </div>
-    </div>
-
-
-
+                  {/* Email */}
+                  <p className="text-gray-500 my-0">
+                    {selectedContent.userEmail}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default Home;
-
