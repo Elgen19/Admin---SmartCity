@@ -968,7 +968,62 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Admin Content Table Dialog */}
+        {/* Admin Content Table Section */}
+        <div className="flex flex-col h-screen bg-white font-nunito sm:px-0">
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            {/* Admin Content Table Section */}
+            <div>
+              {/* Label for Admin Updates */}
+              <div className="pb-2 flex items-center">
+                {/* Font Awesome Icon */}
+                <i className="fas fa-cogs text-[#0e1550] mr-2 pr-2"></i>
+                <h2 className="text-md font-semibold text-[#0e1550] m-0">
+                  Admin Updates
+                </h2>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+                  <thead className="bg-[#0e1550] text-white">
+                    <tr>
+                      <th className="py-2 px-4">Title</th>
+                      <th className="py-2 px-4">Content Type</th>
+                      <th className="py-2 px-4">Timestamp</th>
+                      <th className="py-2 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminContents.length > 0 ? (
+                      adminContents.map((content) => (
+                        <tr key={content.id} className="border-b">
+                          <td className="py-2 px-4">{content.title}</td>
+                          <td className="py-2 px-4">{content.contentType}</td>
+                          <td className="py-2 px-4">
+                            {new Date(content.timestamp).toLocaleString()}
+                          </td>
+                          <td className="py-2 px-4">
+                            <button
+                              className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                              onClick={() => handleViewClick(content)}
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center py-4">
+                          No announcements or updates for admins.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Admin Content Table Dialog */}
         {isDialogOpen && selectedContent && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 p-4">
             <div className="bg-white rounded-lg p-4 w-full max-w-sm shadow-lg relative max-h-[90vh] overflow-y-auto">
@@ -976,7 +1031,7 @@ const Home = () => {
               <div className="flex justify-between items-center ">
                 <h2 className="text-xl  text-[#09d1e3]">Content Details</h2>
                 <button
-                  className="text-red-500 hover:text-red-700 transition bg-transparent px-4 py-2 text-lg rounded-md"
+                  className="text-red-500 hover:text-red-700 transition bg-transparent px-4  text-lg rounded-md"
                   onClick={handleCloseDialog}
                 >
                   <i className="fas fa-times text-2xl"></i>
@@ -984,17 +1039,17 @@ const Home = () => {
               </div>
 
               {/* Compact Content Details */}
-              <div className="space-y-4 text-sm">
+              <div className="text-sm">
                 {/* Title - Styled as an email subject */}
-                <div>
-                  <p className="text-[#0e1550] font-semibold text-lg">
+                <div >
+                  <p className="text-[#0e1550] font-semibold text-lg m-0">
                     {selectedContent.title}
                   </p>
                 </div>
 
                 {/* Message - Styled as the email body */}
-                <div>
-                  <p className="text-gray-700 mb-0">
+                <div className="mb-4">
+                  <p className="text-gray-700 mb-0 mt-0">
                     {selectedContent.message}
                   </p>
                 </div>
@@ -1051,6 +1106,8 @@ const Home = () => {
             </div>
           </div>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );
